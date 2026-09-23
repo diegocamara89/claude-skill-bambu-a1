@@ -36,6 +36,14 @@ pela sequencia oficial: **temperatura → pressure advance na temperatura escolh
 vazao**. Hipoteses exoticas (umidade, miolo, ancoragem, overhang, retracao, BMCU) foram
 todas descartadas depois. Comece pelo padrao; investigue so o que sobrar.
 
+## A terceira regra
+
+> **Diagnostico sai do G-code IMPRESSO (baixado do cartao), e teste so vale se reproduzir o defeito.**
+
+Refatiamento local nao e o que foi impresso (o operador muda limiar e giro no Studio antes de
+mandar). E cupom que sai limpo enquanto a peca sai ruim so descarta, nao aponta causa. Ver
+`references/calibracao.md` (regras de metodo).
+
 ## Roteador
 
 | Situacao | Leia |
@@ -47,6 +55,7 @@ todas descartadas depois. Comece pelo padrao; investigue so o que sobrar.
 | Trocou de bico; calibracao diz "Incompativel" | `references/armadilhas.md` (troca de bico) |
 | Que filamento ja esta calibrado | `registro-filamentos.md` |
 | Medir teia, partida ou suporte por objeto no G-code | `scripts/` (lista em `references/operacao.md`) |
+| Cupom saiu limpo e a peca saiu ruim; montar teste A/B de suporte | `references/armadilhas.md` (o que um recorte muda) + `scripts/placa_ab.py` |
 | Defeito no BMCU (trocador de filamento), nao na impressora | skill `bmcu-370c` |
 
 ## Configuracao validada (07/09/2026)

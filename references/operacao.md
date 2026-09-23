@@ -169,3 +169,6 @@ identidade se confirma por geometria e render.
 | `teia_gcode.py` | bico aberto por faixa de viagem e por feição de destino |
 | `extrusao_por_objeto.py` | peça/suporte/interface/1ª camada por objeto |
 | `partida_gcode.py` | linha do tempo da partida: temperaturas, purga, retração, limpezas |
+| `placa_ab.py` | monta placa 3MF com cópias, cada uma com ajuste por objeto; herda a configuração do 3MF impresso; `--girar` reproduz a orientação na mesa |
+| `cobertura_suporte.py` | área de balanço com suporte e com interface perto, por região, cruzando malha e G-code |
+| `perfil_camadas.py` | por faixa de Z: tempo de camada, viagens, retrações, **ventoinha na parede externa**; compara peça × cupom |

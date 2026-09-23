@@ -15,6 +15,7 @@ calibrado?" e para "de onde veio esse numero?".
 | PETG Masterprint preto | 255 | 0,048 | 255 | — | PEI 80 | 06/09/2026 | ⚠️ medicao ruidosa, nao usar |
 | PETG Masterprint branco | 255 | 0,061 | 255 | — | PEI 80 | 06/09/2026 | ⚠️ medicao ruidosa, nao usar |
 | PETG Masterprint | 240 | **0,048** | 240 | 0,9405 | PEI 80 | 20/09/2026 | ✅ lido na impressora (cali 762); peça boa 22/09 com rolo preto |
+| PETG Masterprint branco, rolo novo | 240 | 0,048 (herdado, não medido neste rolo) | 240 | 0,9405 | PEI 80 | 23/09/2026 | torre 230–250 toda limpa, extrusão no ar lisa e silenciosa; cupons limpos |
 | Generic PETG @A1 0.2 nozzle - 240 | 240 | — | — | — | PEI 80 | 22/09/2026 | ❌ bico 0,2: calibração não concluída |
 
 > **Resolvido em 23/09/2026:** o "0,48" anotado era **0,048** — a impressora devolve

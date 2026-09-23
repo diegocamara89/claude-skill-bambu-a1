@@ -151,6 +151,17 @@ Em cupom baixo tudo está perto da mesa e o suporte "só da mesa" alcança (dife
 No busto inteiro o óculos fica a 85 mm e recebeu **zero** extrusões. Nunca validar essa
 chave com cupom baixo.
 
+### Árvore com pouca interface não causa crosta por si só (23/09/2026)
+
+Cupom da barra de uma manga, duas cópias na mesma placa: A em árvore (82% apoiado, **20% com
+interface** — idêntico ao da peça que saiu com crosta) e B em grade (94% com interface). **As duas
+saíram perfeitas**; a grade deu mais trabalho para soltar. Não receitar "trocar para grade" ou
+"mais interface" contra fiapo e crosta sem outra evidência — a diferença entre peça e cupom estava
+em outro lugar (ver `armadilhas.md`, "o que um recorte muda").
+
+Montar e medir esse tipo de teste: `scripts/placa_ab.py` (cópias com ajuste por objeto) e
+`scripts/cobertura_suporte.py` (apoio e interface por região, no G-code).
+
 ### Refutado
 
 - `reduce_infill_retraction_mode = Disabled` (valor de um especialista): 3.998 mm de bico
