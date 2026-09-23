@@ -128,6 +128,28 @@ ja saia limpa e nao mostrou diferenca — e isso foi lido erradamente como "PA e
 costura, umidade, sobre-extrusao); o experimento seguinte derrubou as tres primeiras.
 Use para desenho de experimento, nao para diagnostico.
 
+**Diagnosticar pelo G-code que foi IMPRESSO, baixado do cartão.** O Studio salva o projeto
+com o que o operador mudou antes de mandar (limiar de suporte, giro na mesa). Um refatiamento
+local não é o arquivo impresso. Caso de 23/09/2026: dois diagnósticos (meu e de um verificador
+externo) saíram de um refatiamento com limiar 15; o impresso tinha limiar 20 e a peça **girada
+90°** na mesa. O arquivo impresso fica no cartão em `/cache/<projeto>_plate_1.gcode`
+(`bambu-mcp/ftp-download.mjs`). Alinhar ao projeto pelas paredes externas antes de cruzar com a
+malha.
+
+**Um teste só serve se primeiro reproduzir o defeito.** Cupom recortado da peça que sai limpo
+enquanto a peça sai ruim não aponta causa: só descarta o que foi mantido igual. Antes de testar
+a correção, o cupom tem de **falhar como a peça**. Conferir antes de imprimir que ele reproduz a
+condição da camada do defeito (`scripts/perfil_camadas.py`, peça × cupom) — ver
+`armadilhas.md`, "o que um recorte muda".
+
+**Descartes baratos primeiro, e eles valem.** Extrusão no ar (fio liso e silencioso) → torre de
+temperatura com o mesmo rolo → bico limpo ao fim da impressão. Minutos, e descartam rolo,
+temperatura e bico com segurança.
+
+**Verificador externo erra junto com o material que recebe.** O que ele disser de novo, medir
+por conta própria antes de aceitar (a afirmação da ventoinha de 23/09 foi conferida e se
+confirmou; a da cobertura, feita no arquivo errado, caiu).
+
 ### Padrao de prova
 
 So esta fechado quando se consegue **ligar e desligar o defeito a vontade**: uma

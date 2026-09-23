@@ -131,3 +131,40 @@ Studio. Conferir no G-code pelas linhas `; LAYER_HEIGHT:` (com espaço).
 
 **A wiki da Bambu responde 402 ao WebFetch.** Ler pelo navegador embutido
 (`get_page_text`). A página de troca de bico da A1 é `wiki.bambulab.com/en/a1/maintenance/replace-hotend`.
+
+## O que um recorte da peça muda sem avisar (23/09/2026)
+
+Cupom recortado de uma escultura grande, mesmo arquivo de configuração, mesma impressora, mesmo
+rolo. Medido na camada do defeito (barra de uma manga), peça × cupom:
+
+| | peça inteira | cupom |
+|---|---|---|
+| tempo por camada | 22 s | 13 s |
+| **ventoinha na parede externa** | **72%** | **89%** |
+| altura dos galhos de suporte até a região | ~30 mm | ~6 mm |
+| orientação na mesa | girada 90° pelo operador | a do projeto |
+| tempo decorrido até a camada | 4h44 | 31 min |
+| cobertura de suporte na região | 82% / 20% interface | 82% / 20% interface |
+
+A peça saiu com crosta; o cupom, limpo. **Cobertura de suporte igual não é condição igual.**
+
+**A ventoinha cai sozinha em peça grande.** Com `fan_cooling_layer_time = 30`, o fatiador varia a
+ventoinha entre `fan_min_speed` (40) e `fan_max_speed` (90) conforme o tempo da camada: camada
+demorada ventila menos. Várias figuras ou ilhas na mesma altura = camada longa = menos vento.
+O cupom, de camada curta, fica no máximo. Medir com `scripts/perfil_camadas.py`.
+
+Para o cupom reproduzir a peça: mesma ventoinha na camada crítica (forçar pelo perfil ou juntar
+cópias até o tempo de camada bater), mesmo giro (`placa_ab.py --girar`), e lembrar que altura
+de suporte e horas decorridas o cupom baixo não reproduz.
+
+Em aberto (não provado): se a ventoinha a 72% é a causa da crosta. É a maior diferença medida,
+não uma causa demonstrada.
+
+## Suporte automático não chega em queixo, barba e aro de óculos
+
+Faces inclinadas demais para o limiar (`support_threshold_angle`) ficam sem apoio mesmo com o
+suporte ligado. Escultura de 98 mm, arquivo impresso: sob o queixo, **97 mm² de balanço, 12%
+com suporte perto e 0% com interface**; na zona dos óculos, 43 mm² e nada. A interface parou em
+Z 66,8, abaixo do rosto. Os defeitos ("vermes" de filamento pendurados) apareceram ali. A falta de
+apoio está medida; que ela cause os vermes é muito provável, não provado.
+Em rosto: medir com `scripts/cobertura_suporte.py --regiao` e **marcar suporte à mão** onde faltar.
