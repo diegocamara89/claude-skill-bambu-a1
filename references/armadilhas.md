@@ -84,3 +84,50 @@ Nao reinvestigar sem evidencia nova.
 | Aumento de retracao | **criou** cicatriz de costura |
 | BMCU / alimentacao irregular | dispersao de K entre slots era ruido de medicao a 255 °C; a 230 os mesmos slots deram 2,4% |
 | Saturacao termica / tempo de camada | a parede unica ficou no piso de velocidade 99% do tempo e saiu limpa |
+
+## Troca de bico e calibração (22/09/2026)
+
+**O diâmetro do bico se troca na TELA da impressora** (Ajustes -> Manutenção -> Bico). Desde
+a V02.01.01.52 o campo do Bambu Studio é só exibição, e "Sincronizar informações" puxa da
+impressora e sobrescreve o que foi digitado. Sintoma: "O tipo de bico não corresponde."
+
+**A calibração e a impressão usam o filamento do CARRETEL, não o do projeto.** Sem AMS, é o
+perfil atribuído ao slot `Ext`. Se ele é de outro bico, o assistente mostra "Incompatível"
+e a lista fica vazia. E a impressão herda a mesa desse perfil: uma torre rodou a 70 °C
+(Bambu PETG Basic) em vez dos 80 do perfil do operador, e descolou. Conferir
+`ams_recent_filament_presets` no `BambuStudio.conf`, ou `bed_target_temper` no status.
+
+**Teste de calibração se envia com "Calibração de Dinâmica de Fluxo" OFF.** Na torre de
+temperatura, ligar põe segunda variável. No padrão de PA, a automática aplica um K por cima
+de todas as faixas e o teste perde o sentido.
+
+**Padrão PA, não Torre PA.** A torre é prisma reto, quase não acelera — é por isso que já
+deu K errado no olho. O padrão é feito de cantos e traz o número impresso.
+
+**Torre de temperatura: não varrer acima do máximo do rolo.** 270->220 num rolo de 230–260:
+os blocos de 270/265 fizeram teia, o bico bateu no acúmulo e a peça descolou.
+
+**Bico 0,2 com PETG não fechou.** Vazão máxima do perfil 1 mm³/s (0,4: 8). A mesma placa
+foi de 3h21 para 6h43; parede interna 3,7x. O próprio assistente avisa alta chance de falha
+da calibração automática com 0,2. Torre e padrão de PA saíram sujos — confundido com o caso
+abaixo. Não validado nesta máquina.
+
+**Bolinhas e teia no PETG (21–22/09): duas mudanças juntas, causa não separada.** O bico 0,4
+tinha crosta marrom no corpo inteiro e bolota na ponta; havia escorrimento com o bico a
+140 °C no nivelamento e teia na placa toda. A impressão limpa veio depois de **consertar o
+bico E trocar o rolo (branco -> preto)** na mesma vez. No caso do PLA, umidade e bico sujo
+foram descartados (tabela acima); aqui ficaram **em aberto**. Se voltar: trocar um de cada
+vez, e fazer antes a extrusão no ar (estalo ou chiado = umidade).
+
+**Ler o estado sem abrir o Studio:** `printer_get_status` via MQTT devolve `k`,
+`vt_tray.cali_idx`, `nozzle_diameter`, `nozzle_type`, `vt_tray.tray_color` e
+`bed_target_temper`. Credenciais em `~/.bambu-mcp/credentials.json`.
+
+## Mais duas que não dão erro
+
+**O Bambu ignora `layer_heights_profile.txt` escrito à mão no 3MF.** Tempo idêntico
+(703 min) com e sem o arquivo. Altura de camada variável tem de ser feita na interface do
+Studio. Conferir no G-code pelas linhas `; LAYER_HEIGHT:` (com espaço).
+
+**A wiki da Bambu responde 402 ao WebFetch.** Ler pelo navegador embutido
+(`get_page_text`). A página de troca de bico da A1 é `wiki.bambulab.com/en/a1/maintenance/replace-hotend`.

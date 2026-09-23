@@ -14,6 +14,17 @@ calibrado?" e para "de onde veio esse numero?".
 | PETG Masterprint (A4) | 230 | 0,082 | 230 | — | PEI 80 | 07/09/2026 | calibrado, nao validado |
 | PETG Masterprint preto | 255 | 0,048 | 255 | — | PEI 80 | 06/09/2026 | ⚠️ medicao ruidosa, nao usar |
 | PETG Masterprint branco | 255 | 0,061 | 255 | — | PEI 80 | 06/09/2026 | ⚠️ medicao ruidosa, nao usar |
+| PETG Masterprint | 240 | **0,048** | 240 | 0,9405 | PEI 80 | 20/09/2026 | ✅ lido na impressora (cali 762); peça boa 22/09 com rolo preto |
+| Generic PETG @A1 0.2 nozzle - 240 | 240 | — | — | — | PEI 80 | 22/09/2026 | ❌ bico 0,2: calibração não concluída |
+
+> **Resolvido em 23/09/2026:** o "0,48" anotado era **0,048** — a impressora devolve
+> `k = 0.0480`, `cali_idx = 762` no status por MQTT. Dentro da faixa já medida
+> (0,027–0,084). Foi a vírgula na hora de passar o número.
+>
+> A peça boa de 22/09 saiu com esse K, a 240 °C, rolo **preto** (`tray_color 161616`). A cor
+> do rolo no dia da calibração não foi registrada. A impressora reporta o bico 0,4 como
+> **aço endurecido** (`hardened_steel`) desde 22/09 — aço endurecido conduz menos calor e
+> costuma pedir alguns graus a mais; se o acabamento mudar, é o primeiro lugar a olhar.
 
 ## Faixas de fabricante (rotulo, nao perfil)
 
