@@ -139,3 +139,33 @@ iniciar — os dois merecem confirmacao separada.
   positivo. Rotulo deve respeitar a zona util: `BAND − altura do sulco − 2×margem`.
 - **Brim: forcar `outer_only`, nunca `auto_brim`** — o auto dispensou brim em pilares
   7×7×36 mm.
+
+## Fatiar por CLI com outro bico
+
+Trocar `nozzle_diameter` e também `printer_settings_id`/`print_settings_id` no 3MF faz o
+fatiador recusar: *"The selected printer is not compatible with the process preset in the
+3mf"* (`return_code -17`, sem G-code). Manter os **nomes** de preset originais e trocar só
+os **valores** (diâmetro, larguras de linha, vazão máxima) fatiou. Conferir no G-code.
+
+## 3MF depois de "dividir em objetos" no Studio
+
+O arquivo passa a ter vários objetos. Os nomes dos nós que o trimesh devolve **não** batem
+com os do Studio (`PROVA_FINAL_8` no Studio era o nó `7`). Mapear pelo nome em
+`Metadata/model_settings.config` + centro no `transform` do `<item>` em `3D/3dmodel.model`:
+`modelagem-3d/scripts/componentes.py arquivo.3mf` faz isso.
+
+## Conferir cada objeto depois de fatiar
+
+`python scripts/extrusao_por_objeto.py plate_1.gcode placa.3mf` — peça, suporte, interface e
+peça na **1ª camada** por objeto, com as regiões tiradas do próprio 3MF. Peça sem extrusão
+na 1ª camada está flutuando e imprime inteira sobre suporte. Foi assim que se viu que a
+interface da placa inteira estava só sob os cupons de colar. O script nomeia por posição:
+identidade se confirma por geometria e render.
+
+## Scripts desta skill (`scripts/`)
+
+| script | mede |
+|---|---|
+| `teia_gcode.py` | bico aberto por faixa de viagem e por feição de destino |
+| `extrusao_por_objeto.py` | peça/suporte/interface/1ª camada por objeto |
+| `partida_gcode.py` | linha do tempo da partida: temperaturas, purga, retração, limpezas |

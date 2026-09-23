@@ -1,11 +1,13 @@
 ---
 name: bambu-a1
-description: Use para qualquer coisa envolvendo a impressora 3D Bambu Lab A1 do usuario - calibrar filamento novo, diagnosticar defeito de impressao (bolinhas/zits, teia/stringing, costura marcada, peca descolando, camada feia), gerar e fatiar peca de teste por linha de comando, enviar arquivo para a impressora, acompanhar impressao, ler codigo de erro HMS. Cobre tambem PETG e troca de chapa. TRIGGERS (PT) - bambu, impressora 3d, A1, calibrar filamento, bolinhas na peca, teia na impressao, stringing, costura marcada, pressure advance, fator K, dinamica de fluxo, flow rate, vazao, torre de temperatura, fatiar por linha de comando, orcaslicer cli, enviar para a impressora, HMS, bico entupido, peca descolou, PETG na A1. TRIGGERS (EN) - bambu lab a1, 3d print blobs, zits, stringing, pressure advance, flow rate calibration, slice via cli, upload to printer, HMS code.
+description: Use para qualquer coisa envolvendo a impressora 3D Bambu Lab A1 do usuario - calibrar filamento novo, diagnosticar defeito de impressao (bolinhas/zits, teia/stringing, costura marcada, peca descolando, camada feia), gerar e fatiar peca de teste por linha de comando, enviar arquivo para a impressora, acompanhar impressao, ler codigo de erro HMS. Cobre tambem PETG, troca de chapa e ajuste de suporte. TRIGGERS (PT) - bambu, impressora 3d, A1, calibrar filamento, bolinhas na peca, teia na impressao, stringing, costura marcada, pressure advance, fator K, dinamica de fluxo, flow rate, vazao, torre de temperatura, fatiar por linha de comando, orcaslicer cli, enviar para a impressora, HMS, bico entupido, peca descolou, PETG na A1, suporte nao sai, suporte grudado, quebrou ao tirar o suporte, folga do suporte, top z distance, interface de suporte, marca do suporte na peca, deformou onde tinha balanco. TRIGGERS (EN) - bambu lab a1, 3d print blobs, zits, stringing, pressure advance, flow rate calibration, slice via cli, upload to printer, HMS code, supports wont come off, support removal, support z gap, support interface layers.
 ---
 
 # Bambu Lab A1 — calibracao, diagnostico e operacao
 
-Hardware de referencia desta skill: **Bambu Lab A1**, bico 0.4 aco inox, **BMCU** (clone de AMS).
+Hardware de referencia desta skill: **Bambu Lab A1**, bico 0.4 (a impressora reporta **aço endurecido** desde 22/09/2026; há também um 0.2 inox, não validado), **BMCU** (clone de AMS)
+— **presente porem quebrado em 20/09/2026**, entao tudo que depende de trocar filamento
+(interface de suporte em outro material, multicor) esta fora ate ele voltar. Ver skill `bmcu-370c`.
 Chapas: **Cool Plate** (PLA) e **texturizada PEI** (PETG, mesa 80 °C).
 Filamentos: PLA Sunlu e PETG Masterprint, ambos genericos.
 
@@ -40,8 +42,12 @@ todas descartadas depois. Comece pelo padrao; investigue so o que sobrar.
 |---|---|
 | Filamento novo, ou defeito de acabamento | `references/calibracao.md` |
 | Gerar/fatiar peca de teste, enviar, monitorar | `references/operacao.md` |
+| Suporte nao sai, quebrou ao remover, marca na peca, balanco deformado | `references/suportes.md` |
 | Algo nao pegou, erro estranho, HMS | `references/armadilhas.md` |
+| Trocou de bico; calibracao diz "Incompativel" | `references/armadilhas.md` (troca de bico) |
 | Que filamento ja esta calibrado | `registro-filamentos.md` |
+| Medir teia, partida ou suporte por objeto no G-code | `scripts/` (lista em `references/operacao.md`) |
+| Defeito no BMCU (trocador de filamento), nao na impressora | skill `bmcu-370c` |
 
 ## Configuracao validada (07/09/2026)
 
@@ -55,12 +61,19 @@ PLA Sunlu vermelho
   resultado          zero bolinhas, teia reduzida em 90%
 
 PETG Masterprint
-  temperatura        230 °C        (minimo do fabricante)
-  pressure advance   ~0,083        (calibrado a 230; a 255 dava ~0,05 e era ruido)
+  temperatura        240 °C        (o que ele imprime de fato; 230 e o minimo do fabricante)
+  pressure advance   0,048         (calibrado a 240, cali 762; lido da impressora em 23/09)
   chapa              texturizada PEI, mesa 80 °C
+  suporte            receita validada em references/suportes.md (22/09)
 ```
 
+> **Resolvido (23/09/2026):** PA recalibrado a 240 °C = **0,048**. O "0,48" que circulou era
+> vírgula no lugar errado — ver `registro-filamentos.md`.
+
 ## Pendencias conhecidas
+
+- **Firmware 01.07.02.00 → 01.08.01.00 disponivel (23/09/2026).** Ao atualizar, registrar
+  antes e depois: K (`k`, `cali_idx`), perfil do carretel e `nozzle_type` pelo status MQTT.
 
 - **Calibracao de Vazao manual (2 passagens) nunca foi feita.** E a etapa que resolveria
   a sobre-extrusao de 8–11% indicada por duas medicoes independentes (preset salvo em
