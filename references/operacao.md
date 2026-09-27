@@ -106,6 +106,45 @@ nesta sessao. **Prefira Python** para parsear G-code.
 Para verificacao maxima, **baixe o arquivo de volta da impressora** com `ftp-download.mjs`
 e inspecione esse — nao a copia local.
 
+## Montar 3MF de varias placas por codigo (validado 26/09/2026)
+
+Para entregar "um arquivo, uma placa por kit" (ou cada kit no seu arquivo), sem o operador
+arrumar nada na GUI:
+
+1. **Estrutura:** `3D/3dmodel.model` so com `<components>` apontando para
+   `3D/Objects/object_N.model` (uma malha por arquivo) e os `<item>` do `<build>`.
+   Complete com `3D/_rels/3dmodel.model.rels`, `Metadata/model_settings.config` e
+   `Metadata/project_settings.config`. Os demais itens podem vir de um 3MF do proprio
+   Studio usado como modelo.
+2. **Malha com vertices soldados** (`trimesh.load(..., process=True)` + `merge_vertices()`),
+   centrada na caixa, com o `<item>` levando a posicao: `transform=... cx cy h/2`. Sopa de
+   triangulos faz o Studio fechar furos (ver "Conferir furos" abaixo).
+3. **Placas:** cada uma e um `<plate>` com `plater_id`, `plater_name` e os
+   `<model_instance>` dos seus objetos. Posicao: grade de `ceil(sqrt(n))` colunas, passo de
+   1,2 × a mesa (256 → 307,2) em X e em −Y. Objeto de cada placa dentro da sua mesa.
+4. **Processo:** copie o `project_settings` do modelo, iguale todas as chaves de processo
+   ao perfil de sistema achatado (`flatten-profile.mjs process "0.20mm Standard @BBL A1"`)
+   e liste em `different_settings_to_system[0]` so o que mudou de proposito. A GUI ignora
+   ajuste nao listado.
+5. **Validar fatiando todas as placas** no `bambu-studio.exe --slice 0 --outputdir <dir>
+   arq.3mf`. O `result.json` traz `sliced_plates[]` com os `objects` de cada placa, o tempo
+   e os gramas. Confira: numero de objetos por placa, `; FEATURE: Support` ausente em cada
+   `plate_N.gcode` e furos abertos.
+
+## Conferir furos e gravacoes no G-code
+
+Antes de entregar arquivo fatiado, confira que nenhum furo saiu preenchido e que nenhuma
+gravacao foi coberta:
+
+- O leitor precisa interpolar arcos: o Studio usa `G2`/`G3`, com `I`/`J` relativos ao
+  ponto atual.
+- Use o **centro real** da feicao na mesa (posicao do objeto + posicao da feicao na peca).
+  Em peca assimetrica, o centro da caixa engana: deu falso "furo preenchido" em todas as
+  placas.
+- **Controle positivo obrigatorio:** o mesmo leitor tem de achar extrusao na parede junto
+  ao furo, ou na camada logo abaixo de uma gravacao. Criterio usado na gravacao: menos de
+  5% dos pontos com plastico na ultima camada e mais de 85% na camada de controle.
+
 ## Enviar e acompanhar
 
 ```bash
@@ -127,6 +166,11 @@ iniciar — os dois merecem confirmacao separada.
 
 ## Desenho de peca de teste
 
+- **Onde vai o tempo numa peca funcional pequena (medido 26/09/2026, PETG 16 mm³/s):**
+  parede externa (~20%), preenchimento solido das chapas finas (~18%) e deslocamento entre
+  as pecas da placa (~17%). Tirar o brim ganhou 2 min em 51, e preenchimento de 15% para
+  10% ganhou 1 min. Topo com 4 camadas em vez de 5 nao mudou nada. Camada de 0,24 ganharia
+  ~10%, mas muda o arredondamento de folgas pequenas: so depois dos encaixes aprovados.
 - **O custo e dominado por numero de camadas**, nao por material. Tirar miolo economizou
   15% de filamento e **20 segundos**. Encurtar a peca e o que economiza.
 - **Somar objetos a mesma placa e quase de graca** — ha folga ociosa por camada.

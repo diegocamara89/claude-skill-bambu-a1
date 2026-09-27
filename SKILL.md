@@ -50,6 +50,7 @@ mandar). E cupom que sai limpo enquanto a peca sai ruim so descarta, nao aponta 
 |---|---|
 | Filamento novo, ou defeito de acabamento | `references/calibracao.md` |
 | Gerar/fatiar peca de teste, enviar, monitorar | `references/operacao.md` |
+| Montar 3MF com varias placas por codigo; conferir furos e gravacoes no G-code | `references/operacao.md` |
 | Suporte nao sai, quebrou ao remover, marca na peca, balanco deformado | `references/suportes.md` |
 | Algo nao pegou, erro estranho, HMS | `references/armadilhas.md` |
 | Trocou de bico; calibracao diz "Incompativel" | `references/armadilhas.md` (troca de bico) |
