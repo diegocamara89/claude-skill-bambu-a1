@@ -123,6 +123,19 @@ vez, e fazer antes a extrusão no ar (estalo ou chiado = umidade).
 `vt_tray.cali_idx`, `nozzle_diameter`, `nozzle_type`, `vt_tray.tray_color` e
 `bed_target_temper`. Credenciais em `~/.bambu-mcp/credentials.json`.
 
+## Três da GUI do Studio (22–27/09/2026)
+
+**Onde está o G-code que a GUI fatiou de verdade:**
+`%LOCALAPPDATA%\Temp\bamboo_model\<dia>\<hora>#<pid>#N\Metadata\.<pid>.0.gcode`; `origin.txt`
+diz qual 3MF está aberto. A pasta some quando o Studio fecha: copiar na hora da conferência.
+
+**Editar o projeto na GUI pode mover partes sem aviso** (dividir em partes e apagar uma: as
+pilhas de 0,4 e 0,6 voltaram para 0,2). Depois de edição do operador, medir Z de cada corpo
+no 3MF salvo e os saltos de camada no G-code.
+
+**Salvar o 3MF na GUI pode tirar chave de filamento de `different_settings_to_system[1]`**
+(`filament_max_volumetric_speed` sumiu da lista em 27/09). Conferir a vazão no G-code.
+
 ## Mais duas que não dão erro
 
 **Onde está o G-code que a GUI fatiou de verdade:**
