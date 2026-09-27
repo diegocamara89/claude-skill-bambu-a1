@@ -57,6 +57,7 @@ mandar). E cupom que sai limpo enquanto a peca sai ruim so descarta, nao aponta 
 | Que filamento ja esta calibrado | `registro-filamentos.md` |
 | Medir teia, partida ou suporte por objeto no G-code | `scripts/` (lista em `references/operacao.md`) |
 | Cupom saiu limpo e a peca saiu ruim; montar teste A/B de suporte | `references/armadilhas.md` (o que um recorte muda) + `scripts/placa_ab.py` |
+| Empilhar pecas sem trocador; ponte/teto em PETG; topo de grade granulado ou com sulco | `references/empilhamento-e-acabamento.md` |
 | Defeito no BMCU (trocador de filamento), nao na impressora | skill `bmcu-370c` |
 
 ## Configuracao validada (07/09/2026)
