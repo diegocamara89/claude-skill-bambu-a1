@@ -24,6 +24,22 @@ Marcação: **[M]** medido (G-code, arquivo ou impressão), **[C]** calculado.
   50 e 25 mm/s; a 10 mm/s a nervura de 1 linha descolou. Em PETG, reduzir o fluxo da ponte PIORA.
 - **[M] Configuração fechada:** fluxo 1,0, 50 mm/s, ventoinha 100%, `bridge_angle = 180` (0°),
   células fechadas. Com 90° a ponte começou no MEIO da célula (fio isolado a 6,8 mm do apoio).
+
+**Conclusões (o porquê):**
+- **Fluxo baixo só funciona devagar, e mesmo assim cobra na colagem.** Fluxo da ponte baixo estica
+  o fio (por isso só deu certo a 10 mm/s), e fluxo baixo + ventoinha máxima cola mal a ponte no
+  topo da nervura. Numa peça virada essa colagem é a união estrutural placa↔nervura: foi ali que
+  a nervura descolou. Com fluxo 1,0 o fio tem massa para cruzar o vão sem romper.
+- **Defeito no MESMO lugar em várias configurações não é parâmetro — é ordem de impressão.** As
+  três variantes de 23/09 tiveram a mesma faixa ruim; o G-code mostrou a ponte começando no meio
+  da célula (1º fio sozinho no ar), indo para um lado e voltando para fechar o outro. Antes de
+  mexer em fluxo/velocidade de novo, ler no G-code onde o 1º fio da ponte nasce.
+- **O fatiador estende a ponte além do apoio** (fios de 28 mm numa célula de 19,2): passa por cima
+  de nervura fina e funde células vizinhas. Por isso células fechadas e anel emendado à nervura.
+- **Quem resolveu foi a geometria, não a receita:** com células fechadas, frestas < 2 mm fundidas
+  e direção fixa, a configuração "normal" (fluxo 1,0, 50 mm/s) deu frente perfeita e teto inteiro.
+- **Ponte com suporte não foi testada neste caso** — todas as rodadas foram sem suporte.
+
 - **[M] OrcaSlicer não reproduz a ordem de ponte do Bambu Studio** — para ordem, só vale o Bambu.
 - **[M] "Camada extra de ponte (beta)" não existe no Bambu Studio** (é do Orca).
 - **[M] `filament_bridge_speed` do filamento não foi aplicado**; valeu `bridge_speed` do processo.
