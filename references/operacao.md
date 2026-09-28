@@ -38,6 +38,10 @@ orca-slicer.exe --slice 0 --arrange 1
 
 - O CLI grava tambem `plate_1.gcode` no `--outputdir` — **G-code puro de graca**, sem
   precisar de flag (`--export-gcode` nao existe).
+- **Um arquivo por vez, sempre.** Cada fatiamento leva minutos. Não faça laço sobre várias variantes num
+  comando só: fatie o arquivo que vai ser impresso, devolva o resultado e só então (e só se o pedido
+  exigir) passe para o próximo. Conferência de todas as variantes para publicação também vai uma por vez,
+  avisando o que falta.
 - **Trabalhe em caminho curto.** MAX_PATH do Windows: o scratchpad tem ~250 caracteres e
   o Orca diz `No such file` para arquivo existente. Use `bambu-calib/work`.
 - **Nunca passe `--arrange` ao fatiar um projeto arranjado pelo usuario** — destroi o

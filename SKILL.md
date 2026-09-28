@@ -44,6 +44,16 @@ Refatiamento local nao e o que foi impresso (o operador muda limiar e giro no St
 mandar). E cupom que sai limpo enquanto a peca sai ruim so descarta, nao aponta causa. Ver
 `references/calibracao.md` (regras de metodo).
 
+## A quarta regra
+
+> **Fatie um arquivo por vez, e só o que a pessoa vai imprimir agora.**
+
+Cada fatiamento pelo CLI leva minutos, e o dono fica esperando. Fatiar várias variantes numa
+rodada (laço sobre 4–5 arquivos, "já que estou aqui") custou uma interrupção em 27/09/2026:
+"muita demora". Entregue primeiro o arquivo que ele vai imprimir; as outras variantes e a
+publicação ficam para depois, **um arquivo por comando**, com retorno curto entre eles, e só
+quando o pedido exigir. Detalhe em `references/operacao.md` § Fatiar por linha de comando.
+
 ## Roteador
 
 | Situacao | Leia |
