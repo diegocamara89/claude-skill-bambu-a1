@@ -19,15 +19,26 @@ de lá — **precisam rodar daquele diretorio**). Geradores em `bambu-calib/`.
 | `bambu-mcp/mqtt-status.mjs` | estado, temperaturas, progresso |
 | `bambu-mcp/mqtt-error.mjs` | `print_error` e codigos HMS |
 | `bambu-mcp/watch-print.mjs` | monitor continuo; registra trocas de faixa e desfecho |
-| `bambu-mcp/print-start.mjs` | inicia `.gcode` remoto; simula sem `--confirmar` |
+| `bambu-mcp/print-start.mjs` | só simulação: o início remoto falha nesta máquina (ver Enviar) |
 
 Nenhum deles imprime o access code. Ler o codigo para colar em parametro de MCP e
 bloqueado pelo classificador — e os scripts nao precisam disso.
 
 ## Fatiar por linha de comando
 
-Use **OrcaSlicer**, nao Bambu Studio: o CLI do Bambu Studio nao escreve no stdout e os
-logs dele sao criptografados. O do Orca reporta o erro em `stderr` e em `00000.log`.
+**Peça real e publicação: CLI do Bambu Studio.** É o mesmo fatiador que o dono abre e imprime.
+
+```
+"C:/Program Files/Bambu Studio/bambu-studio.exe" --slice 0 --outputdir <dir> arq.3mf
+```
+
+- `--slice 0` fatia todas as placas. O Bambu não escreve nada no terminal: o resultado vem em
+  `<dir>/result.json` (`error_string`, e em `sliced_plates[]` o tempo, os gramas e os objetos de
+  cada placa) e o G-code em `<dir>/plate_N.gcode`.
+- A configuração vai **dentro do 3MF** (`Metadata/project_settings.config`); ver "Montar 3MF".
+
+**Torres e testes do `bambu-calib`: OrcaSlicer**, porque a injeção por altura usa a condicional
+do Orca no `layer_change_gcode`, e o Orca reporta erro em `stderr` e em `00000.log`.
 
 ```
 orca-slicer.exe --slice 0 --arrange 1
@@ -36,16 +47,18 @@ orca-slicer.exe --slice 0 --arrange 1
   --export-3mf saida.gcode.3mf --outputdir <dir> modelo.stl
 ```
 
-- O CLI grava tambem `plate_1.gcode` no `--outputdir` — **G-code puro de graca**, sem
-  precisar de flag (`--export-gcode` nao existe).
-- **Um arquivo por vez, sempre.** Cada fatiamento leva minutos. Não faça laço sobre várias variantes num
-  comando só: fatie o arquivo que vai ser impresso, devolva o resultado e só então (e só se o pedido
-  exigir) passe para o próximo. Conferência de todas as variantes para publicação também vai uma por vez,
-  avisando o que falta.
+- O CLI do Orca grava também `plate_1.gcode` no `--outputdir` (`--export-gcode` não existe).
 - **Trabalhe em caminho curto.** MAX_PATH do Windows: o scratchpad tem ~250 caracteres e
   o Orca diz `No such file` para arquivo existente. Use `bambu-calib/work`.
 - **Nunca passe `--arrange` ao fatiar um projeto arranjado pelo usuario** — destroi o
   posicionamento dele.
+
+Nos dois:
+
+- **Um arquivo por vez, sempre.** Cada fatiamento leva minutos. Não faça laço sobre várias variantes num
+  comando só: fatie o arquivo que vai ser impresso, devolva o resultado e só então (e só se o pedido
+  exigir) passe para o próximo. Conferência de todas as variantes para publicação também vai uma por vez,
+  avisando o que falta.
 
 ## Variar parametro por altura
 
@@ -69,13 +82,12 @@ estado da maquina ser explicito em cada altura.
 Resolve a limitacao acima para parametros de **processo**. Testado: 27 combinacoes
 (3 temperaturas × 3 vazoes × 3 densidades de miolo) numa impressao.
 
-1. Gere as STL (uma por variante, geometria identica).
-2. **O usuario** abre no Bambu Studio, arranja, clica direito em cada objeto, define o
-   parametro por objeto, e **salva o projeto `.3mf`**. Deixar UM objeto sem override:
-   ele herda o global, que voce controla.
-3. Fatie **esse `.3mf`** pelo CLI com `--load-settings`. A configuracao por objeto
-   (`Metadata/model_settings.config`) sobrevive; os overrides valem para o global e para
-   a injecao por camada.
+**Por código (caminho padrão):** escrever o ajuste como `<metadata key="<chave>" value="..."/>`
+dentro do `<object>` em `Metadata/model_settings.config`. `scripts/placa_ab.py` monta a placa
+assim, com cópias e um ajuste por cópia. Deixar UM objeto sem ajuste: ele herda o global.
+
+**Pela interface:** o usuario clica direito em cada objeto, define o parametro e salva o
+`.3mf`; o ajuste por objeto sobrevive ao fatiamento pelo CLI.
 
 ### Como verificar que o por-objeto pegou
 
@@ -160,15 +172,21 @@ node mqtt-status.mjs
 node watch-print.mjs            # em background; encerra ao terminar a peca
 ```
 
-**Iniciar impressao e acao fisica: peca aval explicito.** Enviar arquivo e diferente de
-iniciar — os dois merecem confirmacao separada.
+**Iniciar a impressão: pela tela da impressora**, escolhendo o arquivo enviado. Antes, conferir
+pelo status que ela está parada e pedir ao dono que confirme a mesa livre.
 
-- `.gcode` puro: inicia remoto por `gcode_file`, **sem** dialogo de filamento. O slot fica
-  fixo nos `M620/M621 S<n>A` — use `patch-ams-slot.mjs` para trocar. **Nao** mexer no
-  `S255`, que e marcador de descarregar.
-- `.3mf`: inicia por `project_file`, **exige Developer Mode** na impressora. Em troca, da
-  o dialogo de selecao de filamento. Foi por esta rota que a calibracao de PA foi
-  aplicada corretamente — o vinculo de perfil funciona aqui.
+- **[M] Início remoto não funciona nesta máquina (27/09/2026):** comando MQTT sem assinatura dá
+  HMS 0500-0500-0001-0007; com assinatura (`gsign.mjs`), `err_code 84033545`. O `.3mf` por
+  `project_file` exige Developer Mode, que não está ligado. `print-start.mjs` fica só para
+  simulação.
+- **[M] A impressora muda de IP (DHCP):** achar pelo anúncio SSDP na porta UDP 2021.
+- `.gcode` puro: o slot fica fixo nos `M620/M621 S<n>A` — use `patch-ams-slot.mjs` para trocar.
+  **Nao** mexer no `S255`, que e marcador de descarregar.
+
+**Filete saindo durante o nivelamento é normal.** A partida da A1 purga **125 mm**, retrai
+só **2 mm**, desce o bico a **140 °C** e limpa **4 vezes** antes de nivelar. Sobra pressão
+e o PETG chora a 140 °C. Não causa bolinha na peça: é antes da 1ª camada e é limpo.
+Conferir no próprio G-code: `python scripts/partida_gcode.py plate_1.gcode`.
 
 ## Desenho de peca de teste
 

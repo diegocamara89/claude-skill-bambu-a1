@@ -6,7 +6,7 @@ description: Use para qualquer coisa envolvendo a impressora 3D Bambu Lab A1 do 
 # Bambu Lab A1 — calibracao, diagnostico e operacao
 
 Hardware de referencia desta skill: **Bambu Lab A1**, bico 0.4 (a impressora reporta **aço endurecido** desde 22/09/2026; há também um 0.2 inox, não validado), **BMCU** (clone de AMS)
-— **presente porem quebrado em 20/09/2026**, entao tudo que depende de trocar filamento
+— **presente porem quebrado desde 20/09/2026**, entao tudo que depende de trocar filamento
 (interface de suporte em outro material, multicor) esta fora ate ele voltar. Ver skill `bmcu-370c`.
 Chapas: **Cool Plate** (PLA) e **texturizada PEI** (PETG, mesa 80 °C).
 Filamentos: PLA Sunlu e PETG Masterprint, ambos genericos.
@@ -67,10 +67,11 @@ quando o pedido exigir. Detalhe em `references/operacao.md` § Fatiar por linha 
 | Que filamento ja esta calibrado | `registro-filamentos.md` |
 | Medir teia, partida ou suporte por objeto no G-code | `scripts/` (lista em `references/operacao.md`) |
 | Cupom saiu limpo e a peca saiu ruim; montar teste A/B de suporte | `references/armadilhas.md` (o que um recorte muda) + `scripts/placa_ab.py` |
-| Empilhar pecas sem trocador; ponte/teto em PETG (inclusive face sobre suporte com fios soltos); topo de grade granulado ou com sulco | `references/empilhamento-e-acabamento.md` |
+| Ponte, teto, face de baixo sobre suporte com fios soltos ou fendas (PETG) | `references/ponte-e-teto.md` |
+| Empilhar pecas sem trocador; topo de grade granulado ou com sulco | `references/empilhamento-e-acabamento.md` |
 | Defeito no BMCU (trocador de filamento), nao na impressora | skill `bmcu-370c` |
 
-## Configuracao validada (07/09/2026)
+## Configuracao vigente
 
 ```
 PLA Sunlu vermelho
@@ -82,28 +83,18 @@ PLA Sunlu vermelho
   resultado          zero bolinhas, teia reduzida em 90%
 
 PETG Masterprint
-  temperatura        240 °C        (o que ele imprime de fato; 230 e o minimo do fabricante)
-  pressure advance   0,048         (calibrado a 240, cali 762; lido da impressora em 23/09)
+  temperatura        240 °C        (rotulo 230-260)
+  pressure advance   0,048         (calibrado a 240, cali 762)
+  vazao              0,9405        (calibrada)
+  vazao maxima       16 mm³/s      (torre sem falha ate 20)
   chapa              texturizada PEI, mesa 80 °C
-  suporte            receita validada em references/suportes.md (22/09)
+  suporte            receita em references/suportes.md (escultura, camada 0,08)
   ponte / teto       fluxo da ponte 1,5 + ponte 10 mm/s + ventoinha de saliencia 100%
-                     (vao 20-44 mm, com e sem suporte; references/empilhamento-e-acabamento.md, 28-30/09)
+                     (vao 20-44 mm, com e sem suporte; references/ponte-e-teto.md)
 ```
-
-> **Resolvido (23/09/2026):** PA recalibrado a 240 °C = **0,048**. O "0,48" que circulou era
-> vírgula no lugar errado — ver `registro-filamentos.md`.
 
 ## Pendencias conhecidas
 
-- **Firmware 01.07.02.00 → 01.08.01.00 disponivel (23/09/2026).** Ao atualizar, registrar
-  antes e depois: K (`k`, `cali_idx`), perfil do carretel e `nozzle_type` pelo status MQTT.
-
-- **Calibracao de Vazao manual (2 passagens) nunca foi feita.** E a etapa que resolveria
-  a sobre-extrusao de 8–11% indicada por duas medicoes independentes (preset salvo em
-  0,84835 e um teste manual em −7/−8). Afeta **dimensao**, nao acabamento.
-- **Teste dos 100 mm de extrusao** (regua + caneta) nunca foi feito. Mede o extrusor
-  direto, sem passar por aparencia de peca.
-- **Peca com perna arrancando** (`rocky final.3mf`, 210 °C, suportes ligados) nunca
-  retestada com a configuracao nova.
-- Se o HMS de **bico envolto em filamento** parar de aparecer com a config nova, era
-  consequencia do excesso depositado. Se persistir, e sintoma proprio.
+- **Firmware 01.07.02.00 → 01.08.01.00 disponivel (23/09/2026), nao atualizado.** Ao atualizar,
+  registrar antes e depois: K (`k`, `cali_idx`), perfil do carretel e `nozzle_type` pelo status
+  MQTT, e testar de novo o inicio remoto (`references/operacao.md`, Enviar e acompanhar).

@@ -52,11 +52,15 @@ Divulgação progressiva — o `SKILL.md` é curto e roteia:
 
 | Arquivo | Conteúdo |
 |---|---|
-| `SKILL.md` | regras de ouro, configuração validada, pendências, roteador |
+| `SKILL.md` | regras de ouro, configuração vigente, pendências, roteador |
 | `references/calibracao.md` | receita para filamento novo; árvore de diagnóstico; regras de método |
-| `references/operacao.md` | CLI do OrcaSlicer, injeção por altura, parâmetro por objeto, verificação obrigatória |
-| `references/armadilhas.md` | 8 falhas silenciosas, 9 de ambiente, 10 hipóteses descartadas |
-| `registro-filamentos.md` | registro de calibrações, com a temperatura de medição do K |
+| `references/operacao.md` | CLI do Bambu Studio e do OrcaSlicer, injeção por altura, parâmetro por objeto, 3MF de várias placas, envio |
+| `references/suportes.md` | por que o suporte não sai, folga, interface, receita para escultura |
+| `references/ponte-e-teto.md` | ponte longa, teto e face sobre suporte em PETG: receita e geometria |
+| `references/empilhamento-e-acabamento.md` | empilhar peças sem trocador, topo de grade |
+| `references/armadilhas.md` | falhas silenciosas, de ambiente, da interface, hipóteses descartadas |
+| `registro-filamentos.md` | calibrações vigentes, com a temperatura de medição do K |
+| `scripts/` | medições no G-code (teia, partida, suporte por objeto, camadas) e placa A/B |
 
 ## O que dá para variar por altura
 
@@ -72,8 +76,8 @@ objeto sobrevive.
 
 ## Requisitos
 
-- **OrcaSlicer** — não o CLI do Bambu Studio, que não escreve no stdout e criptografa os
-  próprios logs, tornando a depuração cega
+- **Bambu Studio** (CLI `--slice`, resultado em `result.json`) para peças reais, e **OrcaSlicer**
+  para as torres com injeção por altura
 - Node.js 18+ para os scripts de rede
 - Python para parsear G-code (`Select-String` do PowerShell falha em vários casos)
 - Um MCP de Bambu Lab, ou os scripts próprios, com credenciais em
