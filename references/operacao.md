@@ -124,7 +124,9 @@ arrumar nada na GUI:
    centrada na caixa, com o `<item>` levando a posicao: `transform=... cx cy h/2`. Sopa de
    triangulos faz o Studio fechar furos (ver "Conferir furos" abaixo).
 3. **Placas:** cada uma e um `<plate>` com `plater_id`, `plater_name` e os
-   `<model_instance>` dos seus objetos. Posicao: grade de `ceil(sqrt(n))` colunas, passo de
+   `<model_instance>` dos seus objetos. **Nome de placa sem `< > : / \ | ? * "`**: ao abrir, o
+   Studio descarta o nome inteiro (`Plater::has_illegal_filename_characters`, 30/09/2026).
+   Acento pode. Posicao: grade de `ceil(sqrt(n))` colunas, passo de
    1,2 × a mesa (256 → 307,2) em X e em −Y. Objeto de cada placa dentro da sua mesa.
 4. **Processo:** copie o `project_settings` do modelo, iguale todas as chaves de processo
    ao perfil de sistema achatado (`flatten-profile.mjs process "0.20mm Standard @BBL A1"`)

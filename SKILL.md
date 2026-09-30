@@ -1,6 +1,6 @@
 ---
 name: bambu-a1
-description: Use para qualquer coisa envolvendo a impressora 3D Bambu Lab A1 do usuario - calibrar filamento novo, diagnosticar defeito de impressao (bolinhas/zits, teia/stringing, costura marcada, peca descolando, camada feia), gerar e fatiar peca de teste por linha de comando, enviar arquivo para a impressora, acompanhar impressao, ler codigo de erro HMS. Cobre tambem PETG, troca de chapa e ajuste de suporte. TRIGGERS (PT) - bambu, impressora 3d, A1, calibrar filamento, bolinhas na peca, teia na impressao, stringing, costura marcada, pressure advance, fator K, dinamica de fluxo, flow rate, vazao, torre de temperatura, fatiar por linha de comando, orcaslicer cli, enviar para a impressora, HMS, bico entupido, peca descolou, PETG na A1, suporte nao sai, suporte grudado, quebrou ao tirar o suporte, folga do suporte, top z distance, interface de suporte, marca do suporte na peca, deformou onde tinha balanco. TRIGGERS (EN) - bambu lab a1, 3d print blobs, zits, stringing, pressure advance, flow rate calibration, slice via cli, upload to printer, HMS code, supports wont come off, support removal, support z gap, support interface layers.
+description: Use para qualquer coisa envolvendo a impressora 3D Bambu Lab A1 do usuario - calibrar filamento novo, diagnosticar defeito de impressao (bolinhas/zits, teia/stringing, costura marcada, peca descolando, camada feia), gerar e fatiar peca de teste por linha de comando, enviar arquivo para a impressora, acompanhar impressao, ler codigo de erro HMS. Cobre tambem PETG, troca de chapa e ajuste de suporte. TRIGGERS (PT) - bambu, impressora 3d, A1, calibrar filamento, bolinhas na peca, teia na impressao, stringing, costura marcada, pressure advance, fator K, dinamica de fluxo, flow rate, vazao, torre de temperatura, fatiar por linha de comando, orcaslicer cli, enviar para a impressora, HMS, bico entupido, peca descolou, PETG na A1, suporte nao sai, suporte grudado, quebrou ao tirar o suporte, folga do suporte, top z distance, interface de suporte, marca do suporte na peca, deformou onde tinha balanco, ponte, teto, fios soltos na face de baixo, fenda no meio do vao, fluxo da ponte. TRIGGERS (EN) - bambu lab a1, 3d print blobs, zits, stringing, pressure advance, flow rate calibration, slice via cli, upload to printer, HMS code, supports wont come off, support removal, support z gap, support interface layers.
 ---
 
 # Bambu Lab A1 — calibracao, diagnostico e operacao
@@ -67,7 +67,7 @@ quando o pedido exigir. Detalhe em `references/operacao.md` § Fatiar por linha 
 | Que filamento ja esta calibrado | `registro-filamentos.md` |
 | Medir teia, partida ou suporte por objeto no G-code | `scripts/` (lista em `references/operacao.md`) |
 | Cupom saiu limpo e a peca saiu ruim; montar teste A/B de suporte | `references/armadilhas.md` (o que um recorte muda) + `scripts/placa_ab.py` |
-| Empilhar pecas sem trocador; ponte/teto em PETG; topo de grade granulado ou com sulco | `references/empilhamento-e-acabamento.md` |
+| Empilhar pecas sem trocador; ponte/teto em PETG (inclusive face sobre suporte com fios soltos); topo de grade granulado ou com sulco | `references/empilhamento-e-acabamento.md` |
 | Defeito no BMCU (trocador de filamento), nao na impressora | skill `bmcu-370c` |
 
 ## Configuracao validada (07/09/2026)
@@ -86,6 +86,8 @@ PETG Masterprint
   pressure advance   0,048         (calibrado a 240, cali 762; lido da impressora em 23/09)
   chapa              texturizada PEI, mesa 80 °C
   suporte            receita validada em references/suportes.md (22/09)
+  ponte / teto       fluxo da ponte 1,5 + ponte 10 mm/s + ventoinha de saliencia 100%
+                     (vao 20-44 mm, com e sem suporte; references/empilhamento-e-acabamento.md, 28-30/09)
 ```
 
 > **Resolvido (23/09/2026):** PA recalibrado a 240 °C = **0,048**. O "0,48" que circulou era

@@ -50,6 +50,21 @@ A 0,08 mm, **0,12 é 1,5 camada e 0,20 é 2,5** — os dois valores "de manual" 
 vão. `independent_support_layer_height = 1` ameniza, mas não há motivo para escolher
 um múltiplo quebrado.
 
+Conferido no código do Bambu Studio (28/09/2026): a folga arredonda para a camada mais próxima
+(Slicing.cpp), salvo com `independent_support_layer_height = 1`; o suporte em árvore conta a folga
+em camadas inteiras (TreeSupport3D, `z_distance_top_layers`); o normal usa a folga exata
+(SupportMaterial.cpp).
+
+**A 1ª camada sobre suporte com folga > 0 é `Bridge`** (PrintObject.cpp, `stBottomBridge`): quem
+manda na face apoiada são os ajustes de **ponte**, não os de suporte. Face de baixo com fios soltos
+ou fendas sobre suporte em PETG: aplicar a receita de ponte de
+`empilhamento-e-acabamento.md` (fluxo 1,5, 10 mm/s, ventoinha 100%) antes de mexer em folga ou
+interface. Seis rodadas mexendo só no suporte (folga, interface, bloco, camada 0,08) não resolveram.
+
+Outros fatos do código: pontes grossas usam passo = diâmetro do fio + 0,05 (Flow.cpp); o Bambu
+**não tem** densidade de ponte (o Orca tem, de 10 a 125%); `enable_support_ironing` só aparece
+no modo Desenvolvedor.
+
 Aumentar a folga **piora o acabamento da face apoiada** — está na wiki do Orca e é real.
 Começar em 0,16 e subir para 0,24 só se sair grudado.
 

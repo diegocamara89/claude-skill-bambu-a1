@@ -134,20 +134,10 @@ pilhas de 0,4 e 0,6 voltaram para 0,2). Depois de edição do operador, medir Z 
 no 3MF salvo e os saltos de camada no G-code.
 
 **Salvar o 3MF na GUI pode tirar chave de filamento de `different_settings_to_system[1]`**
-(`filament_max_volumetric_speed` sumiu da lista em 27/09). Conferir a vazão no G-code.
+(`filament_max_volumetric_speed` sumiu da lista em 27/09; o PA saiu do arquivo e o `bridge_flow`
+voltou ao padrão em 28/09). Conferir no G-code; ajuste que precisa sobreviver vai **por objeto**.
 
 ## Mais duas que não dão erro
-
-**Onde está o G-code que a GUI fatiou de verdade:**
-`%LOCALAPPDATA%\Tempamboo_model\<dia>\<hora>#<pid>#N\Metadata\.<pid>.0.gcode`; `origin.txt`
-diz qual 3MF está aberto. A pasta some quando o Studio fecha: copiar na hora da conferência.
-
-**Editar o projeto na GUI pode mover partes sem aviso** (dividir em partes e apagar uma: as
-pilhas de 0,4 e 0,6 voltaram para 0,2). Depois de edição do operador, medir Z de cada corpo
-no 3MF salvo e os saltos de camada no G-code.
-
-**Salvar o 3MF na GUI pode tirar chave de filamento de `different_settings_to_system[1]`**
-(`filament_max_volumetric_speed` sumiu da lista em 27/09). Conferir a vazão no G-code.
 
 **O Bambu ignora `layer_heights_profile.txt` escrito à mão no 3MF.** Tempo idêntico
 (703 min) com e sem o arquivo. Altura de camada variável tem de ser feita na interface do
