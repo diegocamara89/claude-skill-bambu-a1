@@ -1,70 +1,34 @@
 # Registro de filamentos calibrados
 
-Arquivo de dados. Atualize a cada calibracao — e a resposta para "esse rolo ja esta
-calibrado?" e para "de onde veio esse numero?".
+Arquivo de dados: só o que vale hoje. Atualize a cada calibracao — e a resposta para "esse rolo
+ja esta calibrado?" e para "de onde veio esse numero?".
 
 **O K vale para a temperatura em que foi medido.** Trocar a temperatura invalida o K.
 
 | Marca / tipo / cor | Temp | K (PA) | Temp da medicao do K | Vazao | Chapa | Data | Estado |
 |---|---|---|---|---|---|---|---|
 | PLA Sunlu vermelho | 190 | **0,043** | 190 | padrao | Cool Plate 35 | 07/09/2026 | ✅ validado: zero bolinhas |
-| PLA Sunlu vermelho | 220 | 0,027 | 220 | padrao | Cool Plate 35 | 07/09/2026 | ❌ gera bolinhas |
-| PETG Masterprint preto (A1) | 230 | 0,084 | 230 | — | PEI 80 | 07/09/2026 | calibrado, nao validado em peca |
-| PETG Masterprint (A3) | 230 | 0,083 | 230 | — | PEI 80 | 07/09/2026 | calibrado, nao validado |
-| PETG Masterprint (A4) | 230 | 0,082 | 230 | — | PEI 80 | 07/09/2026 | calibrado, nao validado |
-| PETG Masterprint preto | 255 | 0,048 | 255 | — | PEI 80 | 06/09/2026 | ⚠️ medicao ruidosa, nao usar |
-| PETG Masterprint branco | 255 | 0,061 | 255 | — | PEI 80 | 06/09/2026 | ⚠️ medicao ruidosa, nao usar |
-| PETG Masterprint | 240 | **0,048** | 240 | 0,9405 | PEI 80 | 20/09/2026 | ✅ lido na impressora (cali 762); peça boa 22/09 com rolo preto |
-| PETG Masterprint branco, rolo novo | 240 | 0,048 (herdado, não medido neste rolo) | 240 | 0,9405 | PEI 80 | 23/09/2026 | torre 230–250 toda limpa, extrusão no ar lisa e silenciosa; cupons limpos |
+| PETG Masterprint (cor do dia da calibração não registrada) | 240 | **0,048** | 240 | 0,9405 (calibrada) | PEI 80 | 20/09/2026 | ✅ lido na impressora (`k = 0.0480`, cali 762); peças boas com o preto desde 22/09 |
+| PETG Masterprint branco | 240 | 0,048 (herdado, não medido neste rolo) | 240 | 0,9405 | PEI 80 | 23/09/2026 | torre 230–250 toda limpa, extrusão no ar lisa; cupons limpos |
 | Generic PETG @A1 0.2 nozzle - 240 | 240 | — | — | — | PEI 80 | 22/09/2026 | ❌ bico 0,2: calibração não concluída |
 
-> **Resolvido em 23/09/2026:** o "0,48" anotado era **0,048** — a impressora devolve
-> `k = 0.0480`, `cali_idx = 762` no status por MQTT. Dentro da faixa já medida
-> (0,027–0,084). Foi a vírgula na hora de passar o número.
->
-> A peça boa de 22/09 saiu com esse K, a 240 °C, rolo **preto** (`tray_color 161616`). A cor
-> do rolo no dia da calibração não foi registrada. A impressora reporta o bico 0,4 como
-> **aço endurecido** (`hardened_steel`) desde 22/09 — aço endurecido conduz menos calor e
-> costuma pedir alguns graus a mais; se o acabamento mudar, é o primeiro lugar a olhar.
+PETG Masterprint: vazão máxima **16 mm³/s** (torre sem falha até 20, a 240 °C).
+
+O bico 0,4 é reportado como **aço endurecido** (`hardened_steel`) desde 22/09: conduz menos
+calor e costuma pedir alguns graus a mais. Se o acabamento mudar, é o primeiro lugar a olhar.
 
 ## Faixas de fabricante (rotulo, nao perfil)
 
-| Material | Faixa | Padrao do perfil generico | Otimo encontrado |
+| Material | Faixa do rótulo | Padrao do perfil generico | Em uso |
 |---|---|---|---|
-| PLA Sunlu | 190–240 | 220 | **190** (piso) |
-| PETG Masterprint | 230–270 | 255 | **230** (piso) |
+| PLA Sunlu | 190–240 | 220 | **190** |
+| PETG Masterprint | 230–260 | 255 | **240** |
 
-Nos dois casos o otimo caiu no piso da faixa. Isso e observacao, nao lei — mas e o
-primeiro lugar a testar num filamento generico novo.
+## Presets do Bambu Studio (30/09/2026)
 
-## Vazao — pendencia aberta
-
-Duas medicoes independentes indicam **sobre-extrusao de 8 a 11%**:
-
-- preset salvo `Generic PETG Flow Rate Calibrated` = **0,84835** (padrao 0,95 → −11%)
-- uma calibracao manual de Flow Rate anterior: melhores blocos em **−7/−8**
-
-**A calibracao de Vazao manual em duas passagens nunca foi concluida e aplicada.** E a
-etapa que fecharia isso. Afeta **dimensao**, nao acabamento — reduzir vazao piorou o
-acabamento nesta maquina.
-
-Teste que mede o extrusor direto, sem depender de aparencia de peca, e que nunca foi
-feito: descarregar o filamento, marcar **120 mm** a partir da entrada do extrusor,
-mandar extrudar **100 mm** pela tela, medir o que sobrou ate a marca.
-
-| Sobrou | Significa |
-|---|---|
-| 20 mm | correto |
-| 12 mm | +8% de sobre-extrusao |
-| 9 mm | +11% |
-
-Regua comum resolve: 8% de 100 mm sao 8 mm.
-
-## Presets do Bambu Studio
-
-Havia 9 presets acumulados de tentativas. Um deles herdava de perfil de **bico 0,2** —
-se selecionado por engano no bico 0,4, sai tudo errado. Manter poucos, com nome que se
-reconheca, e apagar o resto.
+Filamento: `Generic PETG 240` (o de uso), `Generic PETG @BBL A1 0.2 nozzle - 240` (herda de
+perfil de **bico 0,2**: selecionado por engano no bico 0,4, sai tudo errado) e
+`SUNLU Silk PLA+ @BBL A11`. Manter poucos, com nome que se reconheca.
 
 O **K nao fica no arquivo de perfil** — e guardado na impressora, vinculado ao nome da
 calibracao e ao slot. Por isso nao aparece no JSON do preset. Confira o vinculo no `⋯`

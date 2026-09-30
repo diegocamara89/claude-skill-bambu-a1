@@ -68,9 +68,10 @@ ja foi resolvido. Cruzar com `print_error` (0 = sem erro corrente).
   council, **nunca verificado**. Na pratica os comandos foram aplicados.
 - Se configuracao por objeto cobre retracao/z-hop. Cobre **miolo**, isso esta provado.
 
-## Hipoteses testadas e DESCARTADAS
+## Hipoteses DESCARTADAS no caso das bolinhas (PLA e PETG, 06–07/09/2026)
 
-Nao reinvestigar sem evidencia nova.
+Nao reinvestigar bolinhas por estas sem evidencia nova. Valem para aquele defeito, nao em geral
+(a linha de overhang/ponte, por exemplo, nao diz nada sobre qualidade de ponte).
 
 | Hipotese | Como caiu |
 |---|---|
@@ -85,7 +86,7 @@ Nao reinvestigar sem evidencia nova.
 | BMCU / alimentacao irregular | dispersao de K entre slots era ruido de medicao a 255 °C; a 230 os mesmos slots deram 2,4% |
 | Saturacao termica / tempo de camada | a parede unica ficou no piso de velocidade 99% do tempo e saiu limpa |
 
-## Troca de bico e calibração (22/09/2026)
+## Troca de bico e calibração
 
 **O diâmetro do bico se troca na TELA da impressora** (Ajustes -> Manutenção -> Bico). Desde
 a V02.01.01.52 o campo do Bambu Studio é só exibição, e "Sincronizar informações" puxa da
@@ -112,6 +113,10 @@ foi de 3h21 para 6h43; parede interna 3,7x. O próprio assistente avisa alta cha
 da calibração automática com 0,2. Torre e padrão de PA saíram sujos — confundido com o caso
 abaixo. Não validado nesta máquina.
 
+**Temperatura é do polímero, não do bico.** Com o 0,2 o filamento fica ~8× mais tempo no
+bloco (1 contra 8 mm³/s); se o ótimo mudar, tende a **descer**. Na prática, ±10 °C do
+valor do 0,4.
+
 **Bolinhas e teia no PETG (21–22/09): duas mudanças juntas, causa não separada.** O bico 0,4
 tinha crosta marrom no corpo inteiro e bolota na ponta; havia escorrimento com o bico a
 140 °C no nivelamento e teia na placa toda. A impressão limpa veio depois de **consertar o
@@ -123,7 +128,7 @@ vez, e fazer antes a extrusão no ar (estalo ou chiado = umidade).
 `vt_tray.cali_idx`, `nozzle_diameter`, `nozzle_type`, `vt_tray.tray_color` e
 `bed_target_temper`. Credenciais em `~/.bambu-mcp/credentials.json`.
 
-## Três da GUI do Studio (22–27/09/2026)
+## Bambu Studio (interface)
 
 **Onde está o G-code que a GUI fatiou de verdade:**
 `%LOCALAPPDATA%\Temp\bamboo_model\<dia>\<hora>#<pid>#N\Metadata\.<pid>.0.gcode`; `origin.txt`
@@ -137,7 +142,7 @@ no 3MF salvo e os saltos de camada no G-code.
 (`filament_max_volumetric_speed` sumiu da lista em 27/09; o PA saiu do arquivo e o `bridge_flow`
 voltou ao padrão em 28/09). Conferir no G-code; ajuste que precisa sobreviver vai **por objeto**.
 
-## Mais duas que não dão erro
+## Outras que não dão erro
 
 **O Bambu ignora `layer_heights_profile.txt` escrito à mão no 3MF.** Tempo idêntico
 (703 min) com e sem o arquivo. Altura de camada variável tem de ser feita na interface do
@@ -146,7 +151,7 @@ Studio. Conferir no G-code pelas linhas `; LAYER_HEIGHT:` (com espaço).
 **A wiki da Bambu responde 402 ao WebFetch.** Ler pelo navegador embutido
 (`get_page_text`). A página de troca de bico da A1 é `wiki.bambulab.com/en/a1/maintenance/replace-hotend`.
 
-## O que um recorte da peça muda sem avisar (23/09/2026)
+## O que um recorte da peça muda sem avisar
 
 Cupom recortado de uma escultura grande, mesmo arquivo de configuração, mesma impressora, mesmo
 rolo. Medido na camada do defeito (barra de uma manga), peça × cupom:

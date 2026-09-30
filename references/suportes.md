@@ -46,27 +46,22 @@ entre camadas não entrega o que se pediu.
 | 0,12 mm | 0,12 · 0,24 |
 | **0,08 mm** | **0,16 (2 camadas) · 0,24 (3 camadas)** |
 
-A 0,08 mm, **0,12 é 1,5 camada e 0,20 é 2,5** — os dois valores "de manual" caem no
-vão. `independent_support_layer_height = 1` ameniza, mas não há motivo para escolher
-um múltiplo quebrado.
-
-Conferido no código do Bambu Studio (28/09/2026): a folga arredonda para a camada mais próxima
-(Slicing.cpp), salvo com `independent_support_layer_height = 1`; o suporte em árvore conta a folga
-em camadas inteiras (TreeSupport3D, `z_distance_top_layers`); o normal usa a folga exata
-(SupportMaterial.cpp).
-
-**A 1ª camada sobre suporte com folga > 0 é `Bridge`** (PrintObject.cpp, `stBottomBridge`): quem
-manda na face apoiada são os ajustes de **ponte**, não os de suporte. Face de baixo com fios soltos
-ou fendas sobre suporte em PETG: aplicar a receita de ponte de
-`empilhamento-e-acabamento.md` (fluxo 1,5, 10 mm/s, ventoinha 100%) antes de mexer em folga ou
-interface. Seis rodadas mexendo só no suporte (folga, interface, bloco, camada 0,08) não resolveram.
-
-Outros fatos do código: pontes grossas usam passo = diâmetro do fio + 0,05 (Flow.cpp); o Bambu
-**não tem** densidade de ponte (o Orca tem, de 10 a 125%); `enable_support_ironing` só aparece
-no modo Desenvolvedor.
+A 0,08 mm, **0,12 é 1,5 camada e 0,20 é 2,5**: caem no vão. No código do Bambu (28/09/2026): a
+folga arredonda para a camada mais próxima (Slicing.cpp), salvo com
+`independent_support_layer_height = 1`; o suporte em **árvore** conta a folga em camadas inteiras
+(TreeSupport3D, `z_distance_top_layers`); o **normal** usa a folga exata (SupportMaterial.cpp).
+A receita abaixo usa 0,12 a 0,08 (regra do operador: 1 camada + 0,04) e a peça saiu boa; não
+houve teste lado a lado contra 0,16.
 
 Aumentar a folga **piora o acabamento da face apoiada** — está na wiki do Orca e é real.
 Começar em 0,16 e subir para 0,24 só se sair grudado.
+
+### A face apoiada é ponte
+
+A 1ª camada sobre suporte com folga > 0 é `Bridge` (PrintObject.cpp, `stBottomBridge`). Face de
+baixo com fios soltos ou fendas sobre suporte em PETG: aplicar a receita de `ponte-e-teto.md`
+(fluxo 1,5, 10 mm/s, ventoinha 100%) antes de mexer em folga ou interface.
+`enable_support_ironing` existe, mas só aparece no modo Desenvolvedor.
 
 ## Interface é espessura, não contagem
 
@@ -105,7 +100,7 @@ maior e aceitar acabamento pior na face apoiada.
 Para peça delicada e de aparência, PLA é mais fácil em tudo: detalhe mais nítido e suporte
 que solta.
 
-## Receita validada em impressão (22/09/2026)
+## Receita para escultura em PETG, camada 0,08 (validada em impressão, 22/09/2026)
 
 Impressa e aprovada: cabeça com óculos (aro de ~1 mm), colar de elos 1,7 mm e flor com
 encaixe, PETG a 240 °C, camada 0,08, bico 0,4. O óculos saiu inteiro e o suporte soltou
@@ -128,6 +123,9 @@ independent_support_layer_height  0
 wall_generator                    arachne (detect_thin_wall fica cinza e em 0 — normal)
 outer_wall_line_width             0,42   NÃO 0,33 (valor de terceiro, nunca testado)
 ```
+
+`wall_generator = classic` só faz parede de largura inteira. Feição de ~0,9 mm é 2,1 filetes de
+0,42 e **não cabe**: o classic deixa vão ou some com ela, sem avisar. Por isso arachne.
 
 ### `top_z_overrides_xy_distance` é o "Z overrides X/Y" do Cura
 
@@ -181,36 +179,6 @@ Montar e medir esse tipo de teste: `scripts/placa_ab.py` (cópias com ajuste por
 
 - `reduce_infill_retraction_mode = Disabled` (valor de um especialista): 3.998 mm de bico
   aberto antes e depois, viagem por viagem. Não mexe em nada.
-
-### Sobre 0,12 de folga a camada 0,08
-
-A seção "Folga em Z é múltiplo" acima diz que 0,12 é 1,5 camada e cai no vão. A regra
-aditiva do operador (camada + 0,01–0,04, lida nos três vídeos de referência) deu 0,12, e a
-peça saiu boa. Não houve teste lado a lado 0,12 x 0,16 — nenhum dos dois está provado
-superior, mas 0,12 não fez mal.
-
-## Ponto de partida anterior (20/09 — superado pela receita acima)
-
-```
-support_on_build_plate_only    0        obrigatório
-support_critical_regions_only  0        obrigatório
-support_remove_small_overhang  0
-support_style                  tree_slim
-support_threshold_angle        40
-support_object_xy_distance     0,5
-support_top_z_distance         0,16     (2 camadas; 0,24 se sair grudado)
-support_bottom_z_distance      0,16
-support_interface_top_layers   5        (= 0,16 mm reais)
-support_interface_spacing      0,2      (junto com o de cima, nunca sozinho)
-thick_bridges                  0
-wall_generator                 arachne
-enable_prime_tower             0        com um filamento só
-```
-
-`wall_generator = classic` merece linha própria: ele só faz parede de largura inteira.
-Feição de ~0,9 mm é 2,1 filetes de 0,42 e **não cabe** — o classic deixa vão ou some com
-ela, sem avisar. Numa peça cujo conserto foi engrossar feição fina até 0,9 mm, isso
-desfaz metade do trabalho em silêncio.
 
 ## Peças próximas fazem o fatiador recusar
 

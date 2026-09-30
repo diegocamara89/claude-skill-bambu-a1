@@ -13,7 +13,7 @@ impressora, que e outra coisa e nao e necessario.)
 ### 0. Anote a temperatura do fabricante
 
 Do rotulo do rolo, nao do perfil do fatiador. Eles divergem: o Generic PETG do Orca diz
-faixa 220–270, mas o rotulo do Masterprint diz minimo 230. **O rotulo vence.**
+faixa 220–270, mas o rotulo do Masterprint diz 230–260. **O rotulo vence.**
 
 ### 1. Criar o perfil do filamento
 
@@ -27,8 +27,8 @@ Em **Dispositivos**, diga a impressora qual filamento esta no slot.
 Calibracao → **Temperatura**, na faixa do fabricante. Imprimir, escolher a melhor faixa.
 Gravar no perfil (os **dois** campos: camada inicial e demais) e salvar.
 
-Observado no PLA Sunlu: o otimo caiu no **piso** da faixa (190 de 190–240). No PETG
-Masterprint, tambem no piso (230). Nao presuma o meio da faixa.
+Observado: PLA Sunlu no **piso** da faixa (190 de 190–240); PETG Masterprint em 240 (de
+230–260; a torre de 230–250 saiu toda limpa). Nao presuma o meio da faixa.
 
 ### 3. Pressure advance (Dinamica de Fluxo)
 
@@ -158,22 +158,13 @@ configuracao que reproduz + um parametro que elimina, confirmado duas vezes.
 Curva de dose-resposta vale mais que qualquer argumento. No caso das bolinhas:
 120 → 40 → 5 → 0 conforme temperatura e PA foram corrigidos.
 
-## Achados de 21–23/09/2026 (PETG, bico 0,4 e 0,2)
+### Teia: medir antes de mexer em retração
 
-**Filete saindo durante o nivelamento é normal.** A partida da A1 purga **125 mm**, retrai
-só **2 mm**, desce o bico a **140 °C** e limpa **4 vezes** antes de nivelar. Sobra pressão
-e o PETG chora a 140 °C. Não causa bolinha na peça: é antes da 1ª camada e é limpo.
-Conferir no próprio G-code: `python scripts/partida_gcode.py plate_1.gcode`.
-
-**Teia: medir antes de mexer em retração.** `python scripts/teia_gcode.py plate_1.gcode`.
-Na placa de 9 peças: 98% das viagens acima de 2 mm retraíam; 54% do bico aberto eram
-viagens abaixo de 1 mm (abaixo de `retraction_minimum_travel = 1`, por projeto); 43% do
-bico aberto ficava dentro do suporte. A retração não estava falhando. O que o G-code não
-mede é **quanto vaza** — material, umidade, temperatura.
-
-**Temperatura é do polímero, não do bico.** Com o 0,2 o filamento fica ~8× mais tempo no
-bloco (1 contra 8 mm³/s); se o ótimo mudar, tende a **descer**. Na prática, ±10 °C do
-valor do 0,4. Torre de temperatura nunca acima do máximo do rolo (ver `armadilhas.md`).
+`python scripts/teia_gcode.py plate_1.gcode`. Na placa de 9 peças (PETG, 22/09): 98% das
+viagens acima de 2 mm retraíam; 54% do bico aberto eram viagens abaixo de 1 mm (abaixo de
+`retraction_minimum_travel = 1`, por projeto); 43% do bico aberto ficava dentro do suporte. A
+retração não estava falhando. O que o G-code não mede é **quanto vaza** — material, umidade,
+temperatura.
 
 **Ajuste possível, NÃO testado:** se a teia voltar com o rolo seco e o bico limpo, o
 próximo candidato com evidência é baixar `retraction_minimum_travel` — só com teste lado
