@@ -85,7 +85,9 @@ e ajuste do hardware dela, nao descuido.
    serie partem de estados diferentes e a comparacao nao vale.
 2. **Pergunte a condicao de origem** do defeito: temperatura, paredes, miolo, material.
    Sem isso voce projeta teste na condicao errada.
-3. **Rode as calibracoes da Parte 1** antes de investigar.
+3. **Confira as calibrações da Parte 1 e aproveite as já realizadas.** Torre boa com
+   topo ruim em peça pequena pede também comparação de resfriamento e tempo de camada;
+   não é motivo, por si só, para repetir a torre ou alterar a temperatura.
 
 ### Arvore por sintoma
 
@@ -96,6 +98,44 @@ e ajuste do hardware dela, nao descuido.
 | Costura marcada / cicatriz vertical | PA baixo, ou retracao excessiva | reverter retracao ao padrao |
 | Peca/perna descolando | residuo no bico batendo; aderencia | limpar bico; conferir chapa |
 | Camada inicial ruim | tipo de chapa errado no perfil | `curr_bed_type` no G-code |
+| Topo deformado em peça pequena, apesar de torre boa | tempo insuficiente para resfriamento entre camadas | alterar só o limiar de tempo de camada na peça que reproduz o defeito |
+
+### Peça pequena: torre boa, topo ruim
+
+**Caso HB20, 23/10/2026 — resultado físico RELATADO pelo usuário.** A peça em PETG
+saía boa; em ABS, o topo saía ruim apesar da torre de temperatura boa. Segundo o dono,
+uma tentativa com camada de 0,08 mm e passar ferro também não resolveu. Após a orientação
+de mudar o limiar de tempo de camada de **3 para 12 s**, confirmou: "Era isso mesmo.
+Resolveu." Isso registra uma solução para esta peça/perfil, não uma receita universal
+para ABS nem uma calibração completa do rolo.
+
+**Onde ajustar no Bambu Studio, conforme captura conferida:** Filamentos do projeto →
+lápis do ABS → Resfriamento → "Ventilador de refrigeração parcial" → linha
+"Limite máximo de velocidade do ventilador" → campo **"Tempo de camada"** à direita.
+O campo de 3 s corresponde a `slow_down_layer_time`; foi orientado mudar para 12 s,
+mantendo os limites de ventoinha de 10–20%, o tempo de 30 s da linha do limite mínimo
+e marcada "Impressão lenta para melhor resfriamento da camada".
+
+**Como aplicar o aprendizado:** diante dessa combinação de sintomas, comparar primeiro
+os tempos de camada e o resfriamento dos perfis. Testar uma variável por vez na própria
+peça. Camada menor melhora os degraus das inclinações; passar ferro retrabalha o topo,
+mas nenhum deles garante corrigir deformação térmica. O limiar de tempo participa do
+controle de desaceleração e ventilação: manter as porcentagens não prova que o comando
+da ventoinha permaneceu idêntico. A velocidade mínima pode impedir alcançar 12 s;
+conferir o tempo efetivo na prévia/G-code, sem apresentar o limiar como pausa obrigatória.
+
+**Alcance da prova:** acúmulo de calor é a explicação compatível com o resultado;
+temperatura local, duração efetiva das camadas e G-code final não foram medidos.
+Não atribuir o defeito ao material ou à umidade apenas pelas fotos. A torre boa não
+reproduz necessariamente o percurso e o tempo de camada dessa peça pequena.
+
+**Conferir qual impressão está sendo analisada:** o `HB20_R02.3mf` recebido tinha
+0,16 mm, passar ferro desligado e nenhum G-code, diferente da tentativa relatada.
+O campo de 3 s foi depois confirmado na captura do Studio. Consulta ao estado da
+impressora e leitura do cartão falharam por timeout: não foram verificações dos ajustes
+impressos. Distinguir perfil salvo, tela atual e G-code executado; se o acesso falhar,
+dar a recomendação como teste de hipótese, sem afirmar leitura da impressora ou exigir
+que o usuário refaça uma calibração já boa.
 
 ### Regras de metodo, aprendidas errando
 

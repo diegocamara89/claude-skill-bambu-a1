@@ -1,13 +1,13 @@
 ---
 name: bambu-a1
-description: Use para qualquer coisa envolvendo a impressora 3D Bambu Lab A1 do usuario - calibrar filamento novo, diagnosticar defeito de impressao (bolinhas/zits, teia/stringing, costura marcada, peca descolando, camada feia), gerar e fatiar peca de teste por linha de comando, enviar arquivo para a impressora, acompanhar impressao, ler codigo de erro HMS. Cobre tambem PETG, troca de chapa e ajuste de suporte. TRIGGERS (PT) - bambu, impressora 3d, A1, calibrar filamento, bolinhas na peca, teia na impressao, stringing, costura marcada, pressure advance, fator K, dinamica de fluxo, flow rate, vazao, torre de temperatura, fatiar por linha de comando, orcaslicer cli, enviar para a impressora, HMS, bico entupido, peca descolou, PETG na A1, suporte nao sai, suporte grudado, quebrou ao tirar o suporte, folga do suporte, top z distance, interface de suporte, marca do suporte na peca, deformou onde tinha balanco, ponte, teto, fios soltos na face de baixo, fenda no meio do vao, fluxo da ponte. TRIGGERS (EN) - bambu lab a1, 3d print blobs, zits, stringing, pressure advance, flow rate calibration, slice via cli, upload to printer, HMS code, supports wont come off, support removal, support z gap, support interface layers.
+description: Use para calibrar filamentos, diagnosticar defeitos de impressão e operar a Bambu Lab A1 do usuário. Cobre ABS, PETG e PLA; topo deformado em peças pequenas, resfriamento e tempo de camada, bolinhas, teia/stringing, costura, aderência, pontes e suportes; temperatura, dinâmica de fluxo/pressure advance e vazão; Bambu Studio/OrcaSlicer CLI, 3MF, G-code, multicor/BMCU, envio, monitoramento e erros HMS.
 ---
 
 # Bambu Lab A1 — calibracao, diagnostico e operacao
 
 Hardware de referencia desta skill: **Bambu Lab A1**, bico 0.4 (a impressora reporta **aço endurecido** desde 22/09/2026; há também um 0.2 inox, não validado), **BMCU** (clone de AMS)
-— **presente porem quebrado desde 20/09/2026**, entao tudo que depende de trocar filamento
-(interface de suporte em outro material, multicor) esta fora ate ele voltar. Ver skill `bmcu-370c`.
+— **funcionando** (confirmado pelo dono em 09/10/2026; ficou quebrado de 20/09 até o conserto),
+entao multicor e interface de suporte em outro material estao disponiveis. Defeito nele: skill `bmcu-370c`.
 Chapas: **Cool Plate** (PLA) e **texturizada PEI** (PETG, mesa 80 °C).
 Filamentos: PLA Sunlu e PETG Masterprint, ambos genericos.
 
@@ -36,6 +36,11 @@ pela sequencia oficial: **temperatura → pressure advance na temperatura escolh
 vazao**. Hipoteses exoticas (umidade, miolo, ancoragem, overhang, retracao, BMCU) foram
 todas descartadas depois. Comece pelo padrao; investigue so o que sobrar.
 
+Aproveite calibrações já feitas. Se a torre ficou boa e o topo de uma peça pequena ficou
+ruim, compare o resfriamento e o tempo de camada antes de repetir a torre ou mudar a
+temperatura. Caso ABS/HB20 e campo exato da interface em `references/calibracao.md`,
+seção "Peça pequena: torre boa, topo ruim".
+
 ## A terceira regra
 
 > **Diagnostico sai do G-code IMPRESSO (baixado do cartao), e teste so vale se reproduzir o defeito.**
@@ -54,11 +59,23 @@ rodada (laço sobre 4–5 arquivos, "já que estou aqui") custou uma interrupç�
 publicação ficam para depois, **um arquivo por comando**, com retorno curto entre eles, e só
 quando o pedido exigir. Detalhe em `references/operacao.md` § Fatiar por linha de comando.
 
+## A quinta regra
+
+> **3MF editado por código só está pronto depois de aberto no Studio.**
+
+O CLI lê o arquivo inteiro; a interface remonta o perfil de fábrica e só reaplica o que está em
+`different_settings_to_system`. Em 09/10/2026 o Grogu fatiou certo no CLI e abriu no Studio com
+limiar 25 e camada 0,16 em vez de 30 e 0,20 — e a regra já estava escrita em `operacao.md`.
+Edite com `scripts/ajusta_3mf.py` (faz a lista) e confira 2–3 valores na tela do Studio.
+Junto: receita de outra peça (suporte, folga, limiar) se **converte** para a camada nova
+(`references/suportes.md`), não se copia.
+
 ## Roteador
 
 | Situacao | Leia |
 |---|---|
 | Filamento novo, ou defeito de acabamento | `references/calibracao.md` |
+| Peça pequena em ABS, torre boa e topo ruim; localizar tempo de camada | `references/calibracao.md`, seção "Peça pequena: torre boa, topo ruim" |
 | Gerar/fatiar peca de teste, enviar, monitorar | `references/operacao.md` |
 | Montar 3MF com varias placas por codigo; conferir furos e gravacoes no G-code | `references/operacao.md` |
 | Suporte nao sai, quebrou ao remover, marca na peca, balanco deformado | `references/suportes.md` |
@@ -70,6 +87,12 @@ quando o pedido exigir. Detalhe em `references/operacao.md` § Fatiar por linha 
 | Ponte, teto, face de baixo sobre suporte com fios soltos ou fendas (PETG) | `references/ponte-e-teto.md` |
 | Empilhar pecas sem trocador; topo de grade granulado ou com sulco | `references/empilhamento-e-acabamento.md` |
 | Defeito no BMCU (trocador de filamento), nao na impressora | skill `bmcu-370c` |
+| Multicor caro: muitas trocas, purga, torre; conferir se a pintura tem erro | `references/multicor.md` + `scripts/pintura_3mf.py` e `resumo_fatiamento.py` |
+| Mesa cheia (muitos bonecos): Studio sem memória, "pular objeto" indisponível, ordem dos slots | `references/operacao.md` (Enviar e acompanhar) + `scripts/corrige_mapa_3mf.py` + `bambu-mcp/ams-slots.mjs` |
+| Figura impressa de cabeça para baixo, topo áspero; cor nova custa troca | `references/suportes.md` (cúpula na mesa) e `references/multicor.md` (uma cor a mais) |
+| Pintura com pontinhos de outra cor, borda serrilhada | `scripts/limpa_pintura_3mf.py` (`references/multicor.md`, Limpar a pintura) |
+| "Ficou algum ponto sem suporte?" antes de imprimir | `scripts/filete_no_ar.py` (placa inteira) + `references/suportes.md` |
+| Editar 3MF por código (ajuste, perfil de outro projeto, reforço de suporte pintado) | `scripts/ajusta_3mf.py` + a quinta regra acima |
 
 ## Configuracao vigente
 

@@ -93,9 +93,9 @@ placa deram **122–132 min e 9,0–9,4 g**. Escolher bem não custa tempo nem f
 ## PETG sobre PETG solda
 
 É propriedade do material, não ajuste. A rota oficial da Bambu é **interface de PLA sobre
-corpo de PETG** — mas exige trocador funcionando. **O BMCU está presente e quebrado**
-(ver skill `bmcu-370c`), então essa rota está fora por enquanto. Em PETG, contar com folga
-maior e aceitar acabamento pior na face apoiada.
+corpo de PETG** — exige trocador funcionando. **O BMCU está funcionando** (confirmado em
+09/10/2026; ver skill `bmcu-370c`), então essa rota está disponível. Sem ela, em PETG, contar
+com folga maior e aceitar acabamento pior na face apoiada.
 
 Para peça delicada e de aparência, PLA é mais fácil em tudo: detalhe mais nítido e suporte
 que solta.
@@ -124,6 +124,15 @@ wall_generator                    arachne (detect_thin_wall fica cinza e em 0 �
 outer_wall_line_width             0,42   NÃO 0,33 (valor de terceiro, nunca testado)
 ```
 
+### A mesma receita em camada 0,20 (Grogu PETG, 09/10/2026 — fatiada, impressão pendente)
+
+Iguais: árvore(auto), mesa só 0, críticas só 0, `top_z_overrides_xy_distance` 1, xy 0,7, interface
+5 / espaçamento 0 / 40 mm/s, `independent_support_layer_height` 0, arachne, filete externo 0,42.
+Convertidos: **limiar 30** (20 deixou a parte de baixo das orelhas no ar, medido com `filete_no_ar.py`),
+**folga de cima 0,24** (regra 1 camada + 0,04; a árvore conta camadas inteiras, então vira 1 camada),
+**folga de baixo 0,20**. Custo do suporte: 28 g, contra 22 g do arquivo original (PLA, 0,16, 25°, interface de fábrica). Se soldar na
+roupa, próximo passo: folga 0,40 (2 camadas).
+
 `wall_generator = classic` só faz parede de largura inteira. Feição de ~0,9 mm é 2,1 filetes de
 0,42 e **não cabe**: o classic deixa vão ou some com ela, sem avisar. Por isso arachne.
 
@@ -150,6 +159,13 @@ apertado: na cabeça, o pior ponto isolado caiu de 0,62 para 0,31 mm.
 O fatiador apoia o que fica **abaixo** do limiar (inclinação medida da horizontal). Com 15
 só leva suporte o que é quase teto. De 40 para 15 cada cupom perdeu 30–60 mm² de área
 apoiada, toda na faixa 15–40°, que a impressora vence sozinha. Custo: -3 min.
+
+**O limiar depende da altura de camada.** O que importa é quanto cada camada avança para fora
+(camada ÷ tan(ângulo)): 15° a 0,08 avança 0,30 mm; 20° a 0,20 avança 0,55 mm, mais que um filete.
+Medido no Grogu em PETG a 0,20 (09/10/2026): limiar 20 deixou a parte de baixo das orelhas no ar
+(até 11 camadas, nas 3 figuras); limiar 30 apoiou, com o mesmo tempo e peso. Para avanço de ~0,3 mm
+por camada: 0,08 → 15°; 0,12 → 22°; 0,16 → 28°; 0,20 → 34°. Não copiar o 15/20 da receita abaixo
+para outra camada sem refazer essa conta.
 
 ### O que solda é a interface, não a quantidade de suporte
 
@@ -196,3 +212,23 @@ serve — é mais barato errar em 1 h do que em 12 h.
 
 Acervo com as fontes e as medições: notebook **"Suportes 3D — Bambu A1 (evidência)"** no
 NotebookLM.
+
+## Figura de cabeça para baixo: a cúpula que encosta na mesa (Mini Jesus, PETG, 16/10/2026)
+
+De cabeça para baixo a figura gasta menos suporte (100 contra 194 mm² de balanço) e o rosto fica livre, mas o topo
+da cabeça é uma cúpula: a camada 1 é só uma volta de 3,9 × 2,8 mm, e as camadas 2–3 saem **no ar** (parede no ar
++ ponte, medido no G-code baixado do cartão). Com "suporte só em regiões críticas" não houve suporte nenhum: disco
+áspero com borda no topo da cabeça.
+
+| Tentativa | Resultado |
+|---|---|
+| achatar 0,64 mm do topo | 1ª camada vira disco de 7 mm; **recusado** pelo dono ("ajuste feio": disco liso visível de cima) |
+| reforço pintado só no topo, suporte direto da mesa | apoia 83% da borda, mas é suporte de 0,6 mm colado à mesa: dono recusou ("vai grudar tudo") |
+| jangada 3 + reforço, folga 0,24 (padrão do raft é 0,10: solda PETG) | 100% da borda apoiada, folga ≥ 0,24 — não impresso |
+| **inclinado** (X −158,35°, Z 180°, receita de comentário no MakerWorld) + jangada 8 / contato 0,24, suporte normal snug 20°, Z sup 0,24 / inf 0,20, interface 5/3, camada 0,20 | **"quase perfeito"**; só anéis de degrau no topo da cabeça |
+| a mesma + camada 0,08 nos primeiros 2 mm (faixa de altura) | **falhou 8 vezes** na mão do dono: o cabelo não pega no suporte. Camada fina sobre interface não serve |
+
+- Em pé o autor imprime, e nos comentários "20 impressos, 18 cabeças quebraram" ao tirar a árvore: não ir por aí.
+- Faixa de altura por código: `Metadata/layer_config_ranges.xml` (`<object id="1"><range min_z max_z>` com
+  `<option opt_key="layer_height">` ou `wall_loops`). O CLI respeita (conferido em `; LAYER_HEIGHT`).
+- 2 paredes no boneco e 3 só na faixa do pescoço (Ø 3,4 mm): pescoço idêntico ao de 3 paredes, −95 s por boneco.

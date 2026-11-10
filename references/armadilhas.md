@@ -15,6 +15,11 @@ apareceu na inspecao do G-code final.
 | 6 | Rotulo em relevo invadindo a faixa vizinha | dimensionado sem descontar o sulco | zona util = `BAND − sulco − 2×margem` |
 | 7 | `M900 K` ausente e PA desconhecido | `enable_pressure_advance = 0` faz o fatiador **nao** emitir nada; a impressora usa o valor interno dela | comparar so pecas com PA fixado, ou garantir vinculo de perfil |
 | 8 | Finalizacao quebrada apos trocar slot de AMS | `M620 S255` **nao e slot** — e marcador de descarregar/externo | reescrever so as formas com sufixo `A` |
+| 9 | 3MF editado por código abre no Studio com os valores de fábrica (limiar 30 → 25, camada 0,20 → 0,16), mas o CLI fatia certo | a interface remonta o perfil de sistema e só reaplica as chaves listadas em `different_settings_to_system` | `scripts/ajusta_3mf.py` (atualiza a lista); depois **abrir no Studio** e olhar 2–3 valores. Já estava em `operacao.md` (Montar 3MF, passo 4) e foi esquecido em 09/10/2026 |
+| 10 | Análise de G-code acusa metros de "filete no ar" ou mede caminho errado | arcos `G2/G3` (374 mil no Grogu) tratados como reta | seguir o arco com `I/J` (centro relativo ao ponto inicial); `filete_no_ar.py` já faz |
+| 11 | Parede interna aparece "sem apoio" | estar longe de extrusão não é estar no ar: a divisa entre cores fica dentro da peça, sobre preenchimento ralo | apoio se mede pela **seção da malha** na camada anterior (`filete_no_ar.py`): 66 m falsos → 0,3 m reais |
+| 12 | Contador de pixels diz "não aparece em nenhuma vista" | magenta renderizado sai escurecido pela luz (≈155,60,160); filtro r,b>200 dava 0 sempre | testar o contador num caso que **sabidamente** aparece antes de concluir ausência; filtro em `render_pintura_3mf.py` |
+| 13 | Receita de suporte validada sai com orelha no ar | limiar em graus e folga em mm copiados de camada 0,08 para 0,20 | converter pela grandeza física (avanço por camada; folga = camadas inteiras): `suportes.md` |
 
 **Corolario do #4 e #7:** verificar **origem E destino**. No bug da temperatura, o `M104`
 injetado por camada estava certo (190) e o `nozzle_temperature` do perfil estava errado
@@ -146,7 +151,9 @@ voltou ao padrão em 28/09). Conferir no G-code; ajuste que precisa sobreviver v
 
 **O Bambu ignora `layer_heights_profile.txt` escrito à mão no 3MF.** Tempo idêntico
 (703 min) com e sem o arquivo. Altura de camada variável tem de ser feita na interface do
-Studio. Conferir no G-code pelas linhas `; LAYER_HEIGHT:` (com espaço).
+Studio. Conferir no G-code pelas linhas `; LAYER_HEIGHT:` (com espaço). Reconfirmado em
+09/10/2026 no Grogu, com `object_id` = ids do 3MF (2/4/6) e = ordem (1/2/3): alturas idênticas às da
+camada fixa nos dois casos.
 
 **A wiki da Bambu responde 402 ao WebFetch.** Ler pelo navegador embutido
 (`get_page_text`). A página de troca de bico da A1 é `wiki.bambulab.com/en/a1/maintenance/replace-hotend`.
@@ -187,3 +194,29 @@ com suporte perto e 0% com interface**; na zona dos óculos, 43 mm² e nada. A i
 Z 66,8, abaixo do rosto. Os defeitos ("vermes" de filamento pendurados) apareceram ali. A falta de
 apoio está medida; que ela cause os vermes é muito provável, não provado.
 Em rosto: medir com `scripts/cobertura_suporte.py --regiao` e **marcar suporte à mão** onde faltar.
+
+Para a placa inteira, sem escolher região: `scripts/filete_no_ar.py plate_1.gcode projeto.3mf` lista os
+grupos de filete impresso sobre o ar (sem peça sólida embaixo e sem suporte). No Grogu achou a parte de
+baixo das orelhas (limiar errado para a camada) e os cotovelos do "No oigo" (já no arquivo original).
+Reforço pintado por código: `scripts/ajusta_3mf.py --reforco grupos.json --grupos 2,3`
+(`paint_supports="4"`); conferido no G-code que os cotovelos passaram a ter suporte.
+
+## Componente em outro arquivo com o mesmo `objectid` carrega a malha errada (15/10/2026)
+
+Somar uma peça a um objeto por código, com `<component p:path="/3D/Objects/object_19.model" objectid="1">`
+quando o componente original já é `objectid="1"` em outro arquivo, fez o Bambu (CLI 02.08) carregar a malha do
+primeiro arquivo duas vezes: `triangle_count` do `result.json` deu 320.000 (2 × 160 mil) em vez de 222.520, e a
+peça nova não saiu no G-code. Sem erro. Dê `id` próprio ao `<object>` do arquivo novo (e ao `objectid` e ao
+`part id` em `model_settings.config`) e confira `triangle_count` depois de fatiar.
+
+## Mesa grande com malha pintada pesada (Mini Jesus, 15–17/10/2026)
+
+- Studio fecha com "Out of Memory" ao **abrir** 64–117 bonecos pintados de 1,59 mi triângulos, mesmo como instâncias.
+  Reduzir a malha para 160 mil ou 50 mil deixou o Studio com os **mesmos ~12 GB** parado: a memória não vem dos
+  triângulos. O CLI fatia (6–12 GB) e empacota; entregar `.gcode.3mf` pelo CLI (ver operacao.md).
+- Malha reduzida muda o suporte: 160 mil = igual ao original (0,3 g por boneco); **50 mil = 3×** (0,9 g), e numa
+  mesa de 117 isso deu ~10 h a mais. `scripts/reduz_malha_pintada.py`, e medir o suporte depois.
+- Studio avisa "1 non-manifold edge" no arquivo do autor: 1 aresta de 0,002 mm na sola. Inofensiva; "Reparar"
+  não foi testado com pintura.
+- Mais de 64 objetos na placa: o Studio avisa "Over 64 objects in single plate" e o G-code perde os rótulos
+  (sem "pular objeto"). Com até 64, o rótulo vem, mas o mapa do pacote do CLI vem errado (operacao.md).

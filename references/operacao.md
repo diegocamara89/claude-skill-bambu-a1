@@ -17,6 +17,7 @@ de lá — **precisam rodar daquele diretorio**). Geradores em `bambu-calib/`.
 | `bambu-mcp/ftp-download.mjs` | baixa — use para **verificar o que a impressora tem** |
 | `bambu-mcp/ftp-delete.mjs` | remove arquivos |
 | `bambu-mcp/mqtt-status.mjs` | estado, temperaturas, progresso |
+| `bambu-mcp/ams-slots.mjs` | tipo e cor de cada slot do BMCU (ler antes de dizer a ordem dos filamentos) |
 | `bambu-mcp/mqtt-error.mjs` | `print_error` e codigos HMS |
 | `bambu-mcp/watch-print.mjs` | monitor continuo; registra trocas de faixa e desfecho |
 | `bambu-mcp/print-start.mjs` | só simulação: o início remoto falha nesta máquina (ver Enviar) |
@@ -143,7 +144,9 @@ arrumar nada na GUI:
 4. **Processo:** copie o `project_settings` do modelo, iguale todas as chaves de processo
    ao perfil de sistema achatado (`flatten-profile.mjs process "0.20mm Standard @BBL A1"`)
    e liste em `different_settings_to_system[0]` so o que mudou de proposito. A GUI ignora
-   ajuste nao listado.
+   ajuste nao listado. **Vale para qualquer 3MF editado por código**, não só montado do zero:
+   `scripts/ajusta_3mf.py` faz a lista sozinho (esquecido em 09/10/2026: o CLI fatiou certo e o
+   Studio abriu com os valores de fábrica).
 5. **Validar fatiando todas as placas** no `bambu-studio.exe --slice 0 --outputdir <dir>
    arq.3mf`. O `result.json` traz `sliced_plates[]` com os `objects` de cada placa, o tempo
    e os gramas. Confira: numero de objetos por placa, `; FEATURE: Support` ausente em cada
@@ -174,6 +177,26 @@ node watch-print.mjs            # em background; encerra ao terminar a peca
 
 **Iniciar a impressão: pela tela da impressora**, escolhendo o arquivo enviado. Antes, conferir
 pelo status que ela está parada e pedir ao dono que confirme a mesa livre.
+
+- **Ordem dos slots: ler, nunca supor.** `node ams-slots.mjs` lista tipo e cor de cada slot do BMCU. Em
+  16/10/2026 eu afirmei "1 branco, 2 marrom, 3 pele, 4 preto" (a ordem do projeto) e o BMCU tinha 1 branco,
+  2 pele, 3 preto, 4 marrom. Para o arquivo bater com a impressora: reordenar os filamentos no projeto
+  (listas de 4 do `project_settings`, matriz de purga e a pintura) e refatiar; a tela da A1 também deixa
+  escolher o slot de cada filamento ao iniciar o `.gcode.3mf`.
+- **Antes de enviar, olhar o estado; RUNNING = não enviar** com o mesmo nome. Medido em 16/10/2026: ao iniciar,
+  a A1 extrai o G-code para `/cache/<nome>_plate_1.gcode` e imprime dessa cópia (o tamanho bateu com o
+  arquivo iniciado), então sobrescrever o `.gcode.3mf` na raiz não afetou a impressão. Mesmo assim, não contar
+  com isso.
+- **Mesa grande demais para o Studio** (fecha com "Out of Memory"): fatiar e empacotar pelo CLI,
+  `--slice 0 --min-save --export-3mf nome.gcode.3mf --outputdir <dir> projeto.3mf`, e enviar o `.gcode.3mf`.
+  **O pacote do CLI sai sem "pular objeto" na tela** (medido 17/10/2026, mesa de 64 instâncias): o
+  `Metadata/plate_1.json` lista só 1 objeto (id 93, que nem existe nos rótulos do G-code) mais a torre, e o
+  `model_settings.config` não traz `pattern_bbox_file`. Antes de enviar, reescrever `bbox_objects` com um item
+  por rótulo do G-code (`; start printing object, unique label id: N`, caixa tirada da extrusão de cada um)
+  e nunca usar `identify_id` 1000, que é o número da torre (`wipe_tower`).
+  O empacotamento pode travar (14 GB, sem fim) mesmo com o G-code já gravado: montar o pacote a partir de um
+  `.gcode.3mf` válido trocando `plate_1.gcode`, `plate_1.gcode.md5` (MD5 maiúsculo), `project_settings.config`
+  e, em `slice_info.config`, os `<filament>` e a `layer_filament_lists` recalculada do próprio G-code.
 
 - **[M] Início remoto não funciona nesta máquina (27/09/2026):** comando MQTT sem assinatura dá
   HMS 0500-0500-0001-0007; com assinatura (`gsign.mjs`), `err_code 84033545`. O `.3mf` por
@@ -240,3 +263,13 @@ identidade se confirma por geometria e render.
 | `placa_ab.py` | monta placa 3MF com cópias, cada uma com ajuste por objeto; herda a configuração do 3MF impresso; `--girar` reproduz a orientação na mesa |
 | `cobertura_suporte.py` | área de balanço com suporte e com interface perto, por região, cruzando malha e G-code |
 | `perfil_camadas.py` | por faixa de Z: tempo de camada, viagens, retrações, **ventoinha na parede externa**; compara peça × cupom |
+| `resumo_fatiamento.py` | tempo, gramas, trocas, purga, torre, suporte; **trocas por faixa de altura** e **onde cai a 1ª extrusão após cada troca**; grava `medida.json` |
+| `filete_no_ar.py` | grupos de filete da peça impresso sobre o ar (sem peça sólida embaixo nem suporte), placa inteira; segue arcos G2/G3 |
+| `pintura_3mf.py` | regiões de cada cor por objeto e as que **criam camadas de troca sozinhas** (erro de pintura com custo) |
+| `limpa_pintura_3mf.py` | **corrige** a pintura numa cópia: ilhas pequenas para a cor vizinha; `--divisa A,B` põe a divisa no fundo do vinco |
+| `ajusta_3mf.py` | cópia do 3MF com `--set chave=valor`, `--copiar-filamento outro.3mf` e `--reforco` (suporte pintado); **atualiza `different_settings_to_system`** |
+| `render_pintura_3mf.py` | (dentro do Blender, via `modelagem-3d/scripts/roda_blender.py`) vistas com as cores do projeto e marcas em magenta com contagem de pixels por vista |
+| `corrige_mapa_3mf.py` | refaz o mapa de objetos de um `.gcode.3mf` (`plate_1.json` + `pattern_bbox_file`) para o "pular objeto" da tela funcionar; recusa boneco com id 1000 |
+| `purga_bambu.py` | tabela de purga que o Studio calcula pela cor do slot (15 de 16 pares iguais ao Studio); compara cores antes de comprar ou trocar rolo |
+| `reduz_malha_pintada.py` | reduz malha pintada (ex.: 1,59 mi → 160 mil) mantendo divisas de cor; cor de cada triângulo novo = a do original mais próximo |
+| `tmf.py` | biblioteca: objetos, posição na mesa, id do G-code e pintura por triângulo de um 3MF do Bambu |
