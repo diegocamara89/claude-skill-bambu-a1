@@ -8,6 +8,10 @@ description: Use para calibrar filamentos, diagnosticar defeitos de impressão e
 Hardware de referencia desta skill: **Bambu Lab A1**, bico 0.4 (a impressora reporta **aço endurecido** desde 22/09/2026; há também um 0.2 inox, não validado), **BMCU** (clone de AMS)
 — **funcionando** (confirmado pelo dono em 09/10/2026; ficou quebrado de 20/09 até o conserto),
 entao multicor e interface de suporte em outro material estao disponiveis. Defeito nele: skill `bmcu-370c`.
+**Desde 16/11/2026 sao DUAS A1, ambas com BMCU** (RELATADO): **impressora 1** = a original, com o BMCU antigo
+(placa com CH340, V11); **impressora 2** = BMCU novo, placa **Toaiot USB nativo**, V11 AMS_A. Pergunte qual
+impressora antes de enviar, monitorar ou mexer. O `bambu-mcp` foi montado para a impressora 1; se ele ja enxerga a 2
+NAO foi verificado.
 Chapas: **Cool Plate** (PLA) e **texturizada PEI** (PETG, mesa 80 °C).
 Filamentos: PLA Sunlu e PETG Masterprint, ambos genericos.
 
